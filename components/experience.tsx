@@ -5,7 +5,7 @@ import SectionHeading from "./section-heading";
 import SmallSectionHeading from "./section-heading-small";
 import "react-vertical-timeline-component/style.min.css";
 import Timeline from "./timeline";
-import LatestNews from "./news";
+// import LatestNews from "./news";
 import { RexperiencesData, PexperiencesData } from "@/lib/data";
 
 export default function Experience() {
