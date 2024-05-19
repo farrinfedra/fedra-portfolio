@@ -3,23 +3,16 @@
 import Image from "next/image";
 import React from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { BsArrowRight, BsLinkedin } from "react-icons/bs";
 import { HiDownload } from "react-icons/hi";
 import { FaGithubSquare } from "react-icons/fa";
-import { ArrowIcon } from "@/components/icon";
-// import { useSectionInView } from "@/lib/hooks";
-// import { useActiveSectionContext } from "@/context/active-section-context";
 
 export default function Intro() {
-  // const { ref } = useSectionInView("Home", 0.5);
-  // const { setActiveSection, setTimeOfLastClick } = useActiveSectionContext();
-
   return (
     <section
       // ref={ref}
       id="home"
-      className="flex flex-col text-center items-center pt-12 md:flex-row md:text-left"
+      className="flex flex-col text-center items-center pt-12 md:flex-row md:text-left scroll-mt-[100rem]"
     >
       <div className="flex items-center justify-center md:mt-2 md:w-1/2">
         <div className="relative">
@@ -71,11 +64,9 @@ export default function Intro() {
         <motion.h1 className="text-5xl font-bold mt-8 md:text-6xl  text-gray-800 dark:text-white">
           <span>Farrin Sofian</span>
         </motion.h1>
-        <p className="text-lg mt-4 md:text-xl">
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. A nobis
-          distinctio molestias, esse architecto voluptate cumque vitae optio
-          quam ipsam deserunt animi repellat reprehenderit excepturi,
-          accusantium cupiditate quas tempore modi.
+        <p className="text-2xl leading-10 tracking-tight text-slate-900 mt-4 md:text-xl">
+          Hey there! I'm a M.S CS student specializing in AI, specifically, Generative AI.
+          I work unders supervision of Prof. Stephan Mandt. 
         </p>
         <motion.div
           className="flex mt-5 sm:flex-row items-center justify-center gap-2 text-lg font-medium

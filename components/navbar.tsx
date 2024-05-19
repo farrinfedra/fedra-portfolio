@@ -2,13 +2,13 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FIcon } from "@/components/icon";
-import { RxHamburgerMenu } from "react-icons/rx";
-import { FaBeer } from "react-icons/fa";
 import Link from "next/link";
 import { links } from "@/lib/data";
+import clsx from "clsx";
 
 export default function Navbar() {
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("Home");
   return (
     <header className="z-[999] relative">
       <motion.div
@@ -35,11 +35,29 @@ export default function Navbar() {
             {links.map((link) => (
               <motion.li
                 key={link.hash}
-                className="hover:text-gray-950"
+                className={clsx("hover:text-gray-950 transition relative", {
+                  "text-gray-950": activeSection === link.name,
+                })}
                 initial={{ opacity: 0, y: -100 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <Link href={link.hash}>{link.name}</Link>
+                <Link
+                  href={link.hash}
+                  onClick={() => setActiveSection(link.name)}
+                >
+                  {link.name}
+                  {link.name === activeSection && (
+                    <motion.span
+                      className="bg-gray-100 rounded-3xl absolute inset-[-0.5rem] -z-30"
+                      layoutId="activeSection"
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 30,
+                      }}
+                    ></motion.span>
+                  )}
+                </Link>
               </motion.li>
             ))}
           </ul>

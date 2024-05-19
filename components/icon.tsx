@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
+
 const pathVariants = {
   hidden: {
     opacity: 0,
@@ -294,6 +295,14 @@ export function ArrowIcon({
   styleChild,
 }: ArrowIconProps) {
   return (
+    <>
+    <motion.div
+        className="bg-gray-300 mt-12 h-1 w-32 rounded-full sm:block md:hidden dark:bg-opacity-30"
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.125 }}
+    ></motion.div>
+    
     <div className={styleParent}>
       <motion.svg
         id="Layer_2"
@@ -339,5 +348,6 @@ export function ArrowIcon({
         </g>
       </motion.svg>
     </div>
+    </>
   );
 }
