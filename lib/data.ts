@@ -56,7 +56,7 @@ export const RexperiencesData = [
         description: "Worked on a variaty of projects such as Bird songs classification,audio re-synthesis, and audio-based image editing under the supervision of Prof. Aykut Erdem and Dr. Duygu Ceylan from Adobe Research.",
          paper: "https://arxiv.org/abs/2209.00000",
          github: "",
-         more: "True",
+         more: true,
   },
   
   {

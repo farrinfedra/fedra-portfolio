@@ -22,8 +22,9 @@ interface ExperienceItem {
 }
 
 interface TimelineProps {
-  data: ExperienceItem[];
+  data: readonly ExperienceItem[];
 }
+
 
 
 const TimelineItem: React.FC<TimelineItemProps> = ({ title, date, description, paper, github, more }) => {
