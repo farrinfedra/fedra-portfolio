@@ -7,15 +7,15 @@ interface Tag {
 }
 
 interface ProjectCardProps {
-  title: string;
-  description: string;
-  imageUrl: string;
-  paperUrl?: string;
-  githubUrl?: string;
-  latest?: boolean; // Adjusted to boolean for more intuitive handling
-  citation?: string;
-  tags: Tag[];
-  noShadow?: boolean; // Added to control the shadow on the image
+  readonly title: string;
+  readonly description: string;
+  readonly imageUrl: string;
+  readonly paperUrl?: string;
+  readonly githubUrl?: string;
+  readonly latest?: boolean; // Adjusted to boolean for more intuitive handling
+  readonly citation?: string;
+  readonly tags: readonly Tag[];
+  readonly noShadow?: boolean; // Added to control the shadow on the image
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -37,10 +37,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       default: return 'text-xs';
     }
   };
+
   const imageClassName = `max-w-full max-h-96 rounded-lg ${!noShadow ? 'shadow-lg' : ''}`;
 
   return (
-    <div className="items-center flex flex-wrap  my-16 bg-stone-100 border border-cream-100 rounded-lg shadow-lg overflow-hidden">
+    <div className="items-center flex flex-wrap my-16 bg-stone-100 border border-cream-100 rounded-lg shadow-lg overflow-hidden">
       <div className="w-full md:w-4/12 ml-auto mr-auto px-4 py-4">
         <img
           alt={title}

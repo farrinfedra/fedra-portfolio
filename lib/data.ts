@@ -112,7 +112,7 @@ export const projectData = [
     imageUrl: "/audio-image2.png",
     paperUrl: "https://arxiv.org/abs/2405.00878",
     githubUrl: "https://github.com/yourproject/repo",
-    latest: "true",
+    latest: true,
     tags: [
       { text: "GenAI", size: "small" },
       { text: "Pytorch", size: "small" },
