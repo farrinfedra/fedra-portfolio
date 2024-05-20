@@ -8,7 +8,7 @@ import { FaXTwitter } from "react-icons/fa6";
 
 const ContactMe = () => {
   return (
-    <section id="contact" className="flex flex-col w-[65rem] mb-12">
+    <section id="contact" className="flex flex-col md:w-[65rem] mb-12">
       <motion.div
         className="bg-gradient-to-b from-gray-100 dark:from-gray-800 rounded-lg py-12"
         initial={{ opacity: 0 }}
@@ -20,7 +20,7 @@ const ContactMe = () => {
         </div>
 
         <motion.div
-          className="flex w-full justify-center items-center space-x-6"
+          className="flex flex-col md:flex-row w-full justify-center items-center space-y-4 md:space-y-0 md:space-x-4"
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -32,7 +32,7 @@ const ContactMe = () => {
             { icon: FaXTwitter, text: "", href: "https://twitter.com/farrinsofian" },
           ].map((item, index) => (
             <React.Fragment key={index}>
-              {index > 0 && <span className="text-gray-400 dark:text-gray-500">|</span>}
+              {index > 0 && <span className="text-gray-400 dark:text-gray-500 hidden md:inline">|</span>}
               <motion.div
                 className="flex items-center space-x-2"
                 initial={{ y: 20, opacity: 0 }}
