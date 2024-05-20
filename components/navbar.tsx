@@ -31,12 +31,12 @@ export default function Navbar() {
           </div>
 
           {/* Primary Navbar goes here */}
-          <ul className="hidden sm:flex flex-row space-x-12 items-center text-gray-600 font-medium">
+          <ul className="hidden sm:flex flex-row space-x-12 items-center text-gray-600 dark:text-gray-300 font-medium">
             {links.map((link) => (
               <motion.li
                 key={link.hash}
-                className={clsx("hover:text-gray-950 transition relative", {
-                  "text-gray-950": activeSection === link.name,
+                className={clsx("hover:text-gray-950 dark:hover:text-white transition relative", {
+                  "text-gray-950 dark:text-white": activeSection === link.name,
                 })}
                 initial={{ opacity: 0, y: -100 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -48,7 +48,7 @@ export default function Navbar() {
                   {link.name}
                   {link.name === activeSection && (
                     <motion.span
-                      className="bg-gray-100 rounded-3xl absolute inset-[-0.5rem] -z-30"
+                      className="bg-gray-100 dark:bg-gray-700 rounded-3xl absolute inset-[-0.5rem] -z-30"
                       layoutId="activeSection"
                       transition={{
                         type: "spring",
@@ -61,19 +61,19 @@ export default function Navbar() {
               </motion.li>
             ))}
           </ul>
-          {/* mobile logo */}
+          {/* Mobile logo */}
           <div className="sm:hidden w-full flex justify-center">
             <button onClick={() => setMenuOpen(!isMenuOpen)}>
               <FIcon />
             </button>
           </div>
-          {/* mobile menue here */}
+          {/* Mobile menu */}
         </div>
 
         {isMenuOpen && (
-          <ul className="sm:hidden block flex flex-col gap-y-8 items-center pt-6 pb-6 bg-white">
+          <ul className="sm:hidden block flex flex-col gap-y-8 items-center pt-6 pb-6 bg-white dark:bg-gray-800">
             {links.map((link) => (
-              <li key={link.hash} className=" hover:text-gray-950">
+              <li key={link.hash} className="hover:text-gray-950 dark:hover:text-white">
                 <Link href={link.hash}>{link.name}</Link>
               </li>
             ))}

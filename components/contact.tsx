@@ -10,7 +10,7 @@ const ContactMe = () => {
   return (
     <section id="contact" className="flex flex-col w-[65rem] mb-12">
       <motion.div
-        className="bg-gradient-to-b from-gray-100 rounded-lg py-12"
+        className="bg-gradient-to-b from-gray-100 dark:from-gray-800 rounded-lg py-12"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -26,13 +26,13 @@ const ContactMe = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           {[
-            { icon: FaLinkedin, text: "", href: "https://www.linkedin.com/in/farrin-marouf-sofian/",},
-            { icon: FaEnvelope, text: "farrinsofian@gmail.com", href: "mailto:farrinsofian@gmail.com"},
-            { icon: FaGithub, text: "", href: "https://github.com/farrinfedra", color: "text-gray-800" },
-            { icon: FaXTwitter, text: "", href: "https://twitter.com/farrinsofian", },
+            { icon: FaLinkedin, text: "", href: "https://www.linkedin.com/in/farrin-marouf-sofian/" },
+            { icon: FaEnvelope, text: "farrinsofian@gmail.com", href: "mailto:farrinsofian@gmail.com" },
+            { icon: FaGithub, text: "", href: "https://github.com/farrinfedra", color: "text-gray-800 dark:text-gray-300" },
+            { icon: FaXTwitter, text: "", href: "https://twitter.com/farrinsofian" },
           ].map((item, index) => (
             <React.Fragment key={index}>
-              {index > 0 && <span className="text-gray-400">|</span>}
+              {index > 0 && <span className="text-gray-400 dark:text-gray-500">|</span>}
               <motion.div
                 className="flex items-center space-x-2"
                 initial={{ y: 20, opacity: 0 }}
