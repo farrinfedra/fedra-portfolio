@@ -16,47 +16,39 @@ export const links = [
     hash: "#about",
   },
   {
-    name: "Projects",
-    hash: "#projects",
-  },
-  {
-    name: "Skills",
-    hash: "#skills",
-  },
-  {
     name: "Experience",
     hash: "#experience",
   },
+  { 
+    name: "Projects",
+    hash: "#projects",
+  },
+  // {
+  //   name: "Skills",
+  //   hash: "#skills",
+  // },
   {
     name: "Contact",
     hash: "#contact",
   },
 ] as const;
 
-export const skillsData = [
-  "Python",
-  "Pytorch",
-  "High Performance Computing",
-  "Java",
-  "React",
-  "Next.js",
-  "Tailwind CSS",
-] as const;
+
 
 export const RexperiencesData = [
   {
         title: "Mandt Lab",
         date: "University of California, Irvine. March 2024",
-        description: "Working Under Supervision of Prof. Stephan Mandt on intersection of VAEs and Diffusion models.",
+        description: "Working Under Supervision of Prof. Stephan Mandt on Generative Models.",
         website: "http://www.stephanmandt.com/",
   },
   {
         title: "KUIS AI Lab",
         date: "İş Bank and Koç University. Sept 2021 - Jan 2024",
-        description: "Worked on a variaty of projects such as Bird songs classification,audio re-synthesis, and audio-based image editing under the supervision of Prof. Aykut Erdem and Dr. Duygu Ceylan from Adobe Research.",
-         paper: "https://arxiv.org/abs/2209.00000",
-         github: "",
-         more: true,
+        description: "Worked on a variaty of projects such as Bird songs classification, audio re-synthesis, and audio-based image editing under the supervision of Prof. Aykut Erdem, Prof. Erkut Erdem and Dr. Duygu Ceylan from Adobe Research.",
+         paper: "https://arxiv.org/abs/2405.00878",
+         github: "https://github.com/BurakCanBiner/SonicDiffusion",
+        //  more: true,
   },
   
   {
@@ -92,6 +84,23 @@ export const PexperiencesData = [
 
 export const projectData = [
   {
+    title: "Audio-based Image Editing",
+    description: "Enhancing image Generation and Editing through audio cues. Discover how audio can influence and control image editing.",
+    imageUrl: "/audio-image2.png",
+    paperUrl: "https://arxiv.org/abs/2405.00878",
+    githubUrl: "https://github.com/BurakCanBiner/SonicDiffusion",
+    videoUrl: "https://drive.google.com/file/d/17cXXBVrG9vdjvq1qPPgTJIgA5-Oyt2WY/view?usp=sharing",
+    latest: true,
+    tags: [
+      { text: "Huggingface", size: "small" },
+      { text: "GenAI", size: "small" },
+      { text: "Multimodal", size: "small" },
+      { text: "Pytorch", size: "small" },
+      // { text: "Audio Processing", size: "large" },
+      // { text: "Image Editing", size: "medium" },
+    ]
+  },
+  {
     title: "GECTurk: Grammatical Error Correction in Turkish",
     description: "The first extensive dataset for Grammatical Error Correction in Turkish along with baseline and .",
     imageUrl: "/gekturk2.png",
@@ -100,22 +109,9 @@ export const projectData = [
     citation: "A. Kara, F. M. Sofian, A. Bond, and G. G. Şahin, GECTurk: Grammatical Error Correction and Detection Dataset for Turkish. 2023.",
     tags: [
       { text: "NLP", size: "small" },
+      { text: "GEC", size: "small" },
       { text: "Pytorch", size: "small" },
       // { text: "", size: "small" },
-      // { text: "Audio Processing", size: "large" },
-      // { text: "Image Editing", size: "medium" },
-    ]
-  },
-  {
-    title: "Audio-based Image Editing",
-    description: "Generating and editing images using nature, emotions or material sounds.",
-    imageUrl: "/audio-image2.png",
-    paperUrl: "https://arxiv.org/abs/2405.00878",
-    githubUrl: "https://github.com/yourproject/repo",
-    latest: true,
-    tags: [
-      { text: "GenAI", size: "small" },
-      { text: "Pytorch", size: "small" },
       // { text: "Audio Processing", size: "large" },
       // { text: "Image Editing", size: "medium" },
     ]
@@ -123,7 +119,7 @@ export const projectData = [
   
   {
     title: "Birds of Istanbul App",
-    description: "The first extensive dataset for Grammatical Error Correction in Turkish along with baseline and .",
+    description: "The first bird songs classification iOS app in Turkey developed for ornithologists, bird watcher, or those who are curious and want to explore birds in their surroundings.",
     imageUrl: "/boicomb2.png",
     // paperUrl: "https://arxiv.org/pdf/2309.11346.pdf",
     githubUrl: "https://github.com/farrinfedra/BirdsOfIstanbul",

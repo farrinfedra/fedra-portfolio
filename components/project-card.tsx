@@ -1,6 +1,8 @@
 import React from "react";
 import SmallSectionHeading from "./section-heading-small";
-
+import { FaGithub, FaVideo } from "react-icons/fa";
+import { AiOutlineFileText } from "react-icons/ai"; // Import Paper icon
+import { SiArxiv } from "react-icons/si";
 interface Tag {
   text: string;
   size: 'small' | 'medium' | 'large';
@@ -12,6 +14,7 @@ interface ProjectCardProps {
   readonly imageUrl: string;
   readonly paperUrl?: string;
   readonly githubUrl?: string;
+  readonly videoUrl?: string; // New video prop for demo link
   readonly latest?: boolean; // Adjusted to boolean for more intuitive handling
   readonly citation?: string;
   readonly tags: readonly Tag[];
@@ -24,6 +27,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   imageUrl,
   paperUrl,
   githubUrl,
+  videoUrl,
   latest,
   citation,
   tags,
@@ -41,7 +45,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   const imageClassName = `max-w-full max-h-96 rounded-lg ${!noShadow ? 'shadow-lg' : ''}`;
 
   return (
-    <div className="items-center flex flex-wrap my-16 bg-stone-100 border border-cream-100 rounded-lg shadow-lg overflow-hidden">
+    <div className="relative items-center flex flex-wrap my-16 bg-stone-100 border border-cream-100 rounded-lg shadow-lg overflow-hidden">
+      {latest && (
+        <span className="bg-gradient-to-r from-pink-500 hover:to-yellow-500 absolute top-0 right-0 m-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+          Latest
+        </span>
+      )}
       <div className="w-full md:w-4/12 ml-auto mr-auto px-4 py-4">
         <img
           alt={title}
@@ -53,9 +62,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         <div className="md:pr-12">
           <div className="flex items-center justify-between">
             <SmallSectionHeading>{title}</SmallSectionHeading>
-            {latest && (
-              <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">Latest</span>
-            )}
           </div>
           <p className="mt-4 text-lg leading-relaxed text-gray-800">
             {description}
@@ -65,23 +71,32 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               {citation}
             </blockquote>
           )}
-          <div className="mt-4">
+          <div className="mt-4 flex space-x-3">
             {paperUrl && (
               <a href={paperUrl} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center px-6 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-purple-500 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 mr-2">
-                Read Paper
+                className="group bg-white p-2 text-gray-700 hover:text-gray-950 flex items-center gap-1 rounded-full focus:scale-[1.15] hover:scale-[1.15] active:scale-105 transition cursor-pointer border border-gray-300 shadow-sm dark:bg-white/10 dark:text-white/60">
+                <SiArxiv className="h-4 w-4" />
+                <span className=" text-sm opacity-60 group-hover:opacity-100 transition">Paper</span>
               </a>
             )}
             {githubUrl && (
               <a href={githubUrl} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center px-6 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                View on GitHub
+                className="group bg-white p-2 text-gray-700 flex items-center gap-1 text-sm rounded-full focus:scale-[1.15] hover:scale-[1.15] hover:text-gray-950 active:scale-105 transition cursor-pointer border border-gray-300 shadow-sm dark:bg-white/10 dark:text-white/60">
+                <FaGithub className="h-4 w-4" />
+                <span className="text-sm opacity-60 group-hover:opacity-100 transition">GitHub</span>
+              </a>
+            )}
+            {videoUrl && (
+              <a href={videoUrl} target="_blank" rel="noopener noreferrer"
+                className="group bg-white p-2 text-gray-700 flex items-center gap-1 text-sm rounded-full focus:scale-[1.15] hover:scale-[1.15] hover:text-gray-950 active:scale-105 transition cursor-pointer border border-gray-300 shadow-sm dark:bg-white/10 dark:text-white/60">
+                <FaVideo className="h-4 w-4" />
+                <span className="text-sm opacity-60 group-hover:opacity-100 transition">Demo</span>
               </a>
             )}
           </div>
           <div className="mt-4 flex flex-wrap">
             {tags.map((tag, index) => (
-              <span key={index} className={`${tagSizeClass(tag.size)} font-semibold mr-2 mb-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300 bg-gray-200 text-gray-700`}>
+              <span key={index} className={`${tagSizeClass(tag.size)} font-semibold mr-2 mb-2 px-2.5 py-1 rounded dark:bg-gray-700 dark:text-gray-300 bg-gray-200 text-gray-700`}>
                 {tag.text}
               </span>
             ))}

@@ -2,23 +2,24 @@ import React from "react";
 import ProjectCard from "./project-card";
 import SectionHeading from "./section-heading";
 import { projectData } from "@/lib/data"; // Import your project data
+import { BsBoxArrowUpRight } from "react-icons/bs";
 
 export default function Projects() {
   return (
-    <section className="flex flex-col space-y-28 max-w-[65rem] mb-48 bg-stone-200">
+    <section id="projects" className="flex flex-col space-y-24 max-w-[65rem] mb-48">
       <SectionHeading>Papers & Projects</SectionHeading>
       {projectData.map((project, index) => (
         <ProjectCard key={index} {...project} />
       ))}
-      <div className="mt-10 p-4 border-2 border-gray-200 rounded-lg text-center">
-        <p className="text-lg mb-4">If you want to see more projects, visit GitHub:</p>
+      <div className="mt-5 p-2 max-w-min rounded-lg mx-auto text-center">
         <a
-          href="ww.github.com/your-username"
+          href="https://github.com/farrinfedra"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block px-6 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="group bg-gray-900 text-white px-7 py-3 flex items-center gap-2 rounded-full outline-none focus:scale-110 hover:scale-110 active:scale-105 transition cursor-pointer borderBlack dark:bg-white/10"
         >
-          Visit GitHub
+          More
+          <BsBoxArrowUpRight className="ml-1" />
         </a>
       </div>
     </section>

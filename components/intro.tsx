@@ -25,7 +25,7 @@ export default function Intro() {
             }}
           >
             <Image
-              src="/avatar2.jpg"
+              src="/avatar.jpg"
               alt="Farrin portrait"
               width={300}
               height={300}

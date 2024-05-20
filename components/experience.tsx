@@ -10,9 +10,9 @@ import { RexperiencesData, PexperiencesData } from "@/lib/data";
 
 export default function Experience() {
   return (
-    <section id="experience" className="leading-8 scroll-mt-44 max-w-[55rem] mx-auto my-20 sm:mb-40">
+    <section id="experience" className=" leading-8 space-y-24 scroll-mt-44 max-w-[58rem] mx-auto my-20 sm:mb-40">
       <SectionHeading>Experience</SectionHeading>
-      <div className="flex flex-wrap md:flex-nowrap gap-10 justify-center">
+      <div className="flex flex-wrap pl-8 md:flex-nowrap gap-10 justify-center">
         <div className="flex-1">
           <SmallSectionHeading>Research</SmallSectionHeading>
           <Timeline data={RexperiencesData} />

@@ -4,6 +4,8 @@ import Projects from "@/components/projects";
 import { ArrowIcon } from "@/components/icon";
 import AboutMe from "@/components/aboutMe";
 import Experience from "@/components/experience";
+import ContactMe from "@/components/contact";
+import Footer from "@/components/footer";
 
 export default function Home() {
   return (
@@ -18,6 +20,8 @@ export default function Home() {
       <AboutMe />
       <Experience />
       <Projects />
+      <ContactMe />
+      <Footer />
     </main>
   );
 }
