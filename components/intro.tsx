@@ -65,8 +65,13 @@ export default function Intro() {
           <span>Farrin Sofian</span>
         </motion.h1>
         <p className="text-2xl leading-10 tracking-tight text-slate-900 mt-4 md:text-xl">
-          Hey there! I'm a M.S CS student at UCI specializing in AI, specifically, Generative AI.
-          I work under the supervision of Prof. Stephan Mandt.
+          {/* Hey there! I'm a M.S CS student at UC Irvine. 
+          My research and interest are on multi-modal Generative AI and NLP. In my free time, I enjoy swimming and dancing,
+          discovering new cuisines and reading about psychology. */}
+          Hey there! 👋 
+          I'm a M.S. CS student at UC Irvine, where I focus on multi-modal Generative AI and NLP. 🤖✨ 
+          Beyond academics, I enjoy swimming 🏊‍♀️, dancing 💃, discovering new cuisines 🍲, and reading books on psychology 📚.
+          
         </p>
         <motion.div
           className="flex mt-5 sm:flex-row items-center justify-center gap-2 text-lg font-medium

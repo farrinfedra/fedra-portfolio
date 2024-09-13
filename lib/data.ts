@@ -63,9 +63,9 @@ export const RexperiencesData = [
 
 export const PexperiencesData = [
   {
-        title: "Incomming Machine Learning Engineering Intern at Adobe",
+        title: "Machine Learning Engineering Intern at Adobe",
         date: "San Jose, CA. June 2024 - Sept 2024",
-        description: "",
+        description: "Worked on improving the AI Assistant in Adobe Acrobat.",
   },
   {
         title: "Machine Learning Engineering Intern at RadiusAI",
