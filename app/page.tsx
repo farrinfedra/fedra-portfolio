@@ -6,6 +6,7 @@ import AboutMe from "@/components/aboutMe";
 import Experience from "@/components/experience";
 import ContactMe from "@/components/contact";
 import Footer from "@/components/footer";
+import Publications from "@/components/publications";
 
 export default function Home() {
   return (
@@ -17,7 +18,8 @@ export default function Home() {
         width="128px"
         height="128px"
       />
-      <AboutMe />
+      {/* <AboutMe /> */}
+      <Publications />
       <Experience />
       <Projects />
       <ContactMe />

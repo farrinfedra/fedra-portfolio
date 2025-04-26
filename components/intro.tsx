@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { BsArrowRight, BsLinkedin } from "react-icons/bs";
 import { HiDownload } from "react-icons/hi";
 import { FaGithubSquare } from "react-icons/fa";
+import { SiGooglescholar } from "react-icons/si";
 
 export default function Intro() {
   return (
@@ -64,15 +65,33 @@ export default function Intro() {
         <motion.h1 className="text-5xl font-bold mt-8 md:text-6xl  text-gray-800 dark:text-white">
           <span>Farrin Sofian</span>
         </motion.h1>
-        <p className="text-2xl leading-10 tracking-tight text-slate-900 mt-4 md:text-xl">
-          {/* Hey there! I'm a M.S CS student at UC Irvine. 
-          My research and interest are on multi-modal Generative AI and NLP. In my free time, I enjoy swimming and dancing,
-          discovering new cuisines and reading about psychology. */}
-          Hey there! 👋 
-          I'm a M.S. CS student at UC Irvine, where I focus on multi-modal Generative AI and NLP. 🤖✨ 
-          Beyond academics, I enjoy swimming 🏊‍♀️, dancing 💃, discovering new cuisines 🍲, and reading books on psychology 📚.
-          
+        <p className="text-2xl leading-10 tracking-tight text-slate-900 mt-4 md:text-xl space-y-4 dark:text-white">
+          Hey there! 👋 I'm an M.S. student and incoming Ph.D. student in Computer Science at UC Irvine, advised by 
+          {" "}
+          <a
+            href="https://sites.uci.edu/mandt/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#579BB1]"
+          >
+            Prof. Stephan Mandt
+          </a>
+          .
+          <br /><br />
+          My research is supported by the 
+          {" "}
+          <a
+            href="https://chanzuckerberg.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#579BB1]"
+          >
+            Chan Zuckerberg Initiative
+          </a>
+          {" "} 
+          and focuses on generative models, specifically on developing efficient guidance methods across different modalities with diffusion models.
         </p>
+
         <motion.div
           className="flex mt-5 sm:flex-row items-center justify-center gap-2 text-lg font-medium
                       md:justify-start md:gap-4 md:mt-10 md:text-lg"
@@ -105,6 +124,14 @@ export default function Intro() {
             target="_blank"
           >
             <FaGithubSquare />
+          </a>
+
+          <a
+            className="bg-white p-4 text-gray-700 flex items-center gap-2 text-[1.35rem] rounded-full focus:scale-[1.15] hover:scale-[1.15] hover:text-gray-950 active:scale-105 transition cursor-pointer borderBlack dark:bg-white/10 dark:text-white/60"
+            href="https://github.com/farrinfedra"
+            target="_blank"
+          >
+            <SiGooglescholar />
           </a>
         </motion.div>
       </motion.div>

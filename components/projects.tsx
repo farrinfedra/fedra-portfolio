@@ -7,7 +7,7 @@ import { BsBoxArrowUpRight } from "react-icons/bs";
 export default function Projects() {
   return (
     <section id="projects" className="flex flex-col space-y-24 max-w-[65rem] mb-48">
-      <SectionHeading>Papers & Projects</SectionHeading>
+      <SectionHeading>Projects</SectionHeading>
       {projectData.map((project, index) => (
         <ProjectCard key={index} {...project} />
       ))}
