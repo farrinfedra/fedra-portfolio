@@ -7,12 +7,12 @@ const publications = [
   {
     title: "Variational Control for Guidance in Diffusion Models",
     date: "2025",
-    venue: "Preprint - Under Review",
+    venue: "International Conference on Machine Learning (ICML)",
     type: "Preprint",
     authors: "K. Pandey*, F. M. Sofian*, F. Draxler, T. Karaletsos, S. Mandt",
     links: [
       { label: "arXiv", url: "https://arxiv.org/pdf/2502.03686" },
-      { label: "GitHub", url: "https://github.com/farrinfedra" },
+      { label: "GitHub", url: "https://github.com/czi-ai/oc-guidance" },
     ],
   },
   {
@@ -20,10 +20,14 @@ const publications = [
     date: "2024",
     venue: "ACM Transactions on Graphics (TOG)",
     type: "Conference",
-    authors: "B. C. Biner, F. M. Sofian, U. B. Karakaş, D. Ceylan, E. Erdem, et al.",
+    authors:
+      "B. C. Biner, F. M. Sofian, U. B. Karakaş, D. Ceylan, E. Erdem, et al.",
     links: [
-        { label: "arXiv", url: "https://arxiv.org/abs/2405.00878" },
-        { label: "GitHub", url: "https://github.com/BurakCanBiner/SonicDiffusion" }
+      { label: "arXiv", url: "https://arxiv.org/abs/2405.00878" },
+      {
+        label: "GitHub",
+        url: "https://github.com/BurakCanBiner/SonicDiffusion",
+      },
     ],
   },
   {
@@ -33,8 +37,8 @@ const publications = [
     type: "Conference",
     authors: "A. Kara, F. M. Sofian, A. Bond, G. G. Sahin",
     links: [
-        { label: "arXiv", url: "https://arxiv.org/abs/2309.11346" },
-        { label: "GitHub", url: "https://github.com/GGLAB-KU/gecturk" }
+      { label: "arXiv", url: "https://arxiv.org/abs/2309.11346" },
+      { label: "GitHub", url: "https://github.com/GGLAB-KU/gecturk" },
     ],
   },
 ];
@@ -66,7 +70,10 @@ export default function Publications() {
 
       <div className="relative border-l-2 border-gray-300 pl-6 space-y-20 mx-auto">
         {publications.map((pub, index) => (
-          <div key={index} className="ml-2 grid grid-cols-[120px_1fr] gap-6 items-start">
+          <div
+            key={index}
+            className="ml-2 grid grid-cols-[120px_1fr] gap-6 items-start"
+          >
             {/* Left: Type Tag */}
             <div>
               <span className="inline-block bg-gray-200 dark:bg-white/20 text-gray-700 dark:text-gray-300 text-sm font-semibold px-4 py-1 rounded-full text-center">

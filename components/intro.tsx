@@ -66,8 +66,8 @@ export default function Intro() {
           <span>Farrin Sofian</span>
         </motion.h1>
         <p className="text-2xl leading-10 tracking-tight text-slate-900 mt-4 md:text-xl space-y-4 dark:text-white">
-          Hey there! 👋 I'm an M.S. student and incoming Ph.D. student in Computer Science at UC Irvine, advised by 
-          {" "}
+          Hey there! 👋 I'm a second-year Ph.D. student in Computer Science at
+          UC Irvine, advised by{" "}
           <a
             href="https://sites.uci.edu/mandt/"
             target="_blank"
@@ -77,9 +77,9 @@ export default function Intro() {
             Prof. Stephan Mandt
           </a>
           .
-          <br /><br />
-          My research is supported by the 
-          {" "}
+          <br />
+          <br />
+          My research is supported by the{" "}
           <a
             href="https://chanzuckerberg.com/"
             target="_blank"
@@ -87,9 +87,9 @@ export default function Intro() {
             className="text-[#579BB1]"
           >
             Chan Zuckerberg Initiative
-          </a>
-          {" "} 
-          and focuses on generative models, specifically on developing efficient guidance methods across different modalities with diffusion models.
+          </a>{" "}
+          and focuses on generative models, specifically on developing efficient
+          guidance methods across different modalities with diffusion models.
         </p>
 
         <motion.div
