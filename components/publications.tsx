@@ -16,6 +16,17 @@ const publications = [
     ],
   },
   {
+    title: "Control-Augmented Autoregressive Diffusion for Data Assimilation",
+    date: "2025",
+    venue: "Pre-print",
+    type: "Pre-print",
+    authors: "P. Srivastava, F. M. Sofian, F. Immorlano, K. Pandey, S. Mandt",
+    links: [
+      { label: "arXiv", url: "https://arxiv.org/abs/2510.06637" },
+      { label: "GitHub", url: "https://arxiv.org/abs/2510.06637" },
+    ],
+  },
+  {
     title: "SonicDiffusion: Audio-Driven Image Generation and Editing",
     date: "2024",
     venue: "ACM Transactions on Graphics (TOG)",
