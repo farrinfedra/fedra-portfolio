@@ -8,7 +8,7 @@ const publications = [
     title: "Variational Control for Guidance in Diffusion Models",
     date: "2025",
     venue: "International Conference on Machine Learning (ICML)",
-    type: "Preprint",
+    type: "Conference",
     authors: "K. Pandey*, F. M. Sofian*, F. Draxler, T. Karaletsos, S. Mandt",
     links: [
       { label: "arXiv", url: "https://arxiv.org/pdf/2502.03686" },
@@ -24,6 +24,19 @@ const publications = [
     links: [
       { label: "arXiv", url: "https://arxiv.org/abs/2510.06637" },
       { label: "GitHub", url: "https://arxiv.org/abs/2510.06637" },
+    ],
+  },
+  {
+    title: "Parallel Token Generation for Language Models",
+    date: "2025",
+    venue: "Pre-print",
+    type: "Pre-print",
+    authors: "F. Draxler, J. Will, F. M. Sofian, T. Karaletsos, S. Mandt",
+    links: [
+      {
+        label: "OpenReview",
+        url: "https://openreview.net/forum?id=AGJomYSrUG",
+      },
     ],
   },
   {
