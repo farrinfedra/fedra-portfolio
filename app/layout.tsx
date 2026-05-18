@@ -2,14 +2,14 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Navbar from "@/components/navbar";
-import Footer from "@/components/footer";
+import ThemeContextProvider from "@/context/theme-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Farrin Sofian",
   description:
-    "Farrin Sofian is a Master student at UCI and a machine learning engineer.",
+    "Farrin Sofian is a Ph.D. student at UC Irvine working on controllable and scalable generative AI.",
 };
 
 export default function RootLayout({
@@ -20,13 +20,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="!scroll-smooth">
       <body
-        className={`${inter.className} bg-[#f9f9f9] text-gray-950 relative pt-28 sm:pt-36 dark:bg-gray-900 dark:text-gray-50 dark:text-opacity-90`}
+        className={`${inter.className} bg-[#f5f5f7] text-[#1d1d1f] relative pt-24 sm:pt-28 dark:bg-[#050505] dark:text-[#f5f5f7] dark:text-opacity-95`}
       >
-        <div className="bg-[#E3F4F4] absolute top-[-6rem] -z-10 right-[11rem] h-[31.25rem] w-[31.25rem] rounded-full blur-[10rem] sm:w-[68.75rem] dark:bg-[#946263]"></div>
-        <div className="bg-[#D2E9E9] absolute top-[-1rem] -z-10 left-[-35rem] h-[31.25rem] w-[50rem] rounded-full blur-[10rem] sm:w-[68.75rem] md:left-[-33rem] lg:left-[-28rem] xl:left-[-15rem] 2xl:left-[-5rem] dark:bg-[#676394]"></div>
-        <Navbar />
+        <ThemeContextProvider>
+          <Navbar />
         
-        {children}
+          {children}
+        </ThemeContextProvider>
         
         {/* <Footer /> */}
       </body>
