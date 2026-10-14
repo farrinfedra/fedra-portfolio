@@ -44,6 +44,12 @@ const allTags = Array.from(
 ) as Tag[];
 const totalPapers = publicationGroups.reduce((n, g) => n + g.papers.length, 0);
 
+// Year comes from the venue label, e.g. "NeurIPS 2026" or "Preprint 2024".
+const paperYear = (p: Publication) => Number(p.venue.match(/\d{4}/)?.[0] ?? 0);
+const allYears = Array.from(
+  new Set(publicationGroups.flatMap((g) => g.papers.map(paperYear)))
+).sort((x, y) => y - x);
+
 function Authors({ authors }: { authors: string }) {
   return (
     <p className="text-sm leading-relaxed text-muted">
@@ -123,11 +129,11 @@ function PaperLinks({
 
 function PaperCard({
   paper,
-  activeTag,
+  activeTags,
   cardClass,
 }: {
   paper: Publication;
-  activeTag: Tag | null;
+  activeTags: Tag[];
   cardClass: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -147,14 +153,14 @@ function PaperCard({
         <span
           title={paper.venueFull}
           className={clsx(
-            "rounded-md px-2 py-0.5 font-mono text-[0.7rem] font-medium",
+            "rounded-md px-2 py-0.5 font-mono text-[0.76rem] font-bold",
             published ? "bg-accent/10 text-accent" : "border border-line text-faint"
           )}
         >
           {paper.venue}
         </span>
         {paper.tags.map((t) => (
-          <TagPill key={t} tag={t} active={t === activeTag} />
+          <TagPill key={t} tag={t} active={activeTags.includes(t)} />
         ))}
       </div>
 
@@ -193,51 +199,60 @@ function PaperCard({
   );
 }
 
-function FilterChips({
-  activeTag,
-  setActiveTag,
+function FilterChips<T extends string | number>({
+  label,
+  options,
+  selected,
+  onChange,
 }: {
-  activeTag: Tag | null;
-  setActiveTag: (t: Tag | null) => void;
+  label: string;
+  options: T[];
+  selected: T[];
+  onChange: React.Dispatch<React.SetStateAction<T[]>>;
 }) {
-  const options: (Tag | null)[] = [null, ...allTags];
+  const toggle = (o: T) =>
+    onChange((prev) => (prev.includes(o) ? prev.filter((x) => x !== o) : [...prev, o]));
+
+  const chip = (key: string, text: string, on: boolean, onClick: () => void) => (
+    <button
+      key={key}
+      onClick={onClick}
+      aria-pressed={on}
+      className={clsx(
+        "rounded-full border px-3 py-1 text-xs transition-colors duration-200",
+        on
+          ? "border-ink bg-ink text-bg"
+          : "border-line text-muted hover:border-ink/30 hover:text-ink"
+      )}
+    >
+      {text}
+    </button>
+  );
+
   return (
-    <div className="flex flex-wrap gap-1.5">
-      {options.map((tag) => {
-        const selected = activeTag === tag;
-        return (
-          <button
-            key={tag ?? "all"}
-            onClick={() => setActiveTag(tag)}
-            aria-pressed={selected}
-            className={clsx(
-              "relative rounded-full border px-3 py-1 text-xs transition-colors",
-              selected
-                ? "border-transparent text-bg"
-                : "border-line text-muted hover:border-ink/30 hover:text-ink"
-            )}
-          >
-            {selected && (
-              <motion.span
-                layoutId="tag-pill"
-                className="absolute inset-0 rounded-full bg-ink"
-                transition={{ type: "spring", stiffness: 420, damping: 34 }}
-              />
-            )}
-            <span className="relative">{tag ?? "All"}</span>
-          </button>
-        );
-      })}
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+      <p className="w-14 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-faint">
+        {label}
+      </p>
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label={`Filter by ${label.toLowerCase()}`}>
+        {chip("all", "All", selected.length === 0, () => onChange([]))}
+        {options.map((o) => chip(String(o), String(o), selected.includes(o), () => toggle(o)))}
+      </div>
     </div>
   );
 }
 
 export default function Publications() {
-  const [activeTag, setActiveTag] = useState<Tag | null>(null);
+  const [topics, setTopics] = useState<Tag[]>([]);
+  const [years, setYears] = useState<number[]>([]);
+  const filtering = topics.length > 0 || years.length > 0;
 
   // Lets other parts of the page (e.g. the intro visual) pre-select a topic.
   useEffect(() => {
-    const onTopic = (e: Event) => setActiveTag((e as CustomEvent<Tag>).detail);
+    const onTopic = (e: Event) => {
+      setTopics([(e as CustomEvent<Tag>).detail]);
+      setYears([]);
+    };
     window.addEventListener("set-topic", onTopic);
     return () => window.removeEventListener("set-topic", onTopic);
   }, []);
@@ -247,11 +262,21 @@ export default function Publications() {
       publicationGroups
         .map((g) => ({
           ...g,
-          papers: activeTag ? g.papers.filter((p) => p.tags.includes(activeTag)) : g.papers,
+          // any selected topic AND any selected year
+          papers: g.papers.filter(
+            (p) =>
+              (topics.length === 0 || p.tags.some((t) => topics.includes(t))) &&
+              (years.length === 0 || years.includes(paperYear(p)))
+          ),
         }))
         .filter((g) => g.papers.length > 0),
-    [activeTag]
+    [topics, years]
   );
+  const shown = groups.reduce((n, g) => n + g.papers.length, 0);
+  const clearAll = () => {
+    setTopics([]);
+    setYears([]);
+  };
 
   return (
     <section id="publications" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-20 sm:px-6">
@@ -261,12 +286,31 @@ export default function Publications() {
         </p>
       </SectionHeading>
 
-      <Reveal className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-3">
-        <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-faint">
-          Filter by topic
-        </p>
-        <FilterChips activeTag={activeTag} setActiveTag={setActiveTag} />
+      <Reveal className="mb-6 space-y-3">
+        <FilterChips label="Topic" options={allTags} selected={topics} onChange={setTopics} />
+        <FilterChips label="Year" options={allYears} selected={years} onChange={setYears} />
+        <div className="flex h-5 items-center gap-3 font-mono text-xs text-faint">
+          {filtering && (
+            <>
+              <span>
+                Showing {shown} of {totalPapers}
+              </span>
+              <button onClick={clearAll} className="text-accent underline-offset-4 hover:underline">
+                Clear filters
+              </button>
+            </>
+          )}
+        </div>
       </Reveal>
+
+      {shown === 0 && (
+        <div className="rounded-2xl border border-dashed border-line px-6 py-12 text-center text-muted">
+          No papers match these filters.{" "}
+          <button onClick={clearAll} className="text-accent underline underline-offset-4">
+            Clear filters
+          </button>
+        </div>
+      )}
 
       <AnimatePresence mode="popLayout" initial={false}>
         {groups.map((group) => {
@@ -297,7 +341,7 @@ export default function Publications() {
                     ))}
                   </div>
                 )}
-                <p className={`mb-3 font-mono text-xs ${theme.index}`}>
+                <p className={`mb-3 font-mono text-sm font-bold tracking-[0.15em] ${theme.index}`}>
                   {String(index).padStart(2, "0")}
                 </p>
                 <h3 className="display text-[2rem] leading-[1.1] text-ink [text-wrap:balance]">
@@ -312,13 +356,13 @@ export default function Publications() {
                     <PaperCard
                       key={paper.title}
                       paper={paper}
-                      activeTag={activeTag}
+                      activeTags={topics}
                       cardClass={theme.card}
                     />
                   ))}
                 </AnimatePresence>
                 {hasEqual && (
-                  <p className="pt-1 text-right text-xs text-faint">* Equal contribution</p>
+                  <p className="pt-1 text-right text-sm text-muted">* Equal contribution</p>
                 )}
               </div>
             </motion.div>

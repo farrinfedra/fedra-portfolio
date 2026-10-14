@@ -69,11 +69,12 @@ export default function Hero({ board }: { board: React.ReactNode }) {
           <p>
             I work on generative modeling with{" "}
             <strong className="font-semibold text-ink">diffusion models</strong>:
-            steering pretrained models at{" "}
-            <strong className="font-semibold text-accent">test time</strong>,{" "}
-            <strong className="font-semibold text-accent">fine-tuning toward rewards</strong>,
-            and designing new ways to train{" "}
+            designing new{" "}
             <strong className="font-semibold text-indigo">foundation models</strong>,
+            conditional sampling via{" "}
+            <strong className="font-semibold text-accent">test-time steering</strong>,
+            and{" "}
+            <strong className="font-semibold text-accent">reward-guided fine-tuning</strong>,
             with applications from images and language to{" "}
             <strong className="font-semibold text-sage">science</strong>. Previously, I was an AI
             Resident at the{" "}
