@@ -3,14 +3,23 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-const publications = [
+type Publication = {
+  title: string;
+  date: string;
+  venue: string;
+  type: string;
+  authors: string;
+  links: { label: string; url?: string }[]; // no url = shown as a non-clickable "coming soon" tag
+};
+
+const publications: Publication[] = [
   {
     title: "Hierarchical Variational Policies for Reward-Guided Diffusion",
     date: "2026",
-    venue: "Pre-print",
-    type: "Pre-print",
+    venue: "Neural Information Processing Systems (NeurIPS)",
+    type: "Conference",
     authors: "K. Pandey*, F. M. Sofian*, J. Groeneveld, F. Draxler, S. Mandt",
-    links: [],
+    links: [{ label: "arXiv", url: "https://arxiv.org/abs/2605.21661" }],
   },
   {
     title: "Variational Test-time Optimization for Diffusion Synchronization",
@@ -18,13 +27,30 @@ const publications = [
     venue: "Pre-print",
     type: "Pre-print",
     authors: "H. Lee*, F. M. Sofian*, K. Pandey, S. Mandt",
-    links: [],
+    links: [{ label: "arXiv", url: "https://arxiv.org/pdf/2606.15614" }],
+  },
+  {
+    title: "Representation-Augmented Diffusions",
+    date: "2026",
+    venue: "Pre-print",
+    type: "Pre-print",
+    authors: "F. M. Sofian*, K. Pandey*, S. Mandt",
+    links: [{ label: "arXiv (coming soon)" }],
+  },
+  {
+    title: "Parallel Language Models via Variational Decoding",
+    date: "2026",
+    venue: "Pre-print",
+    type: "Pre-print",
+    authors:
+      "F. Draxler*, R. C. Geyer*, D. Geyfman*, F. M. Sofian*, J. Will*, et al.",
+    links: [{ label: "arXiv (coming soon)" }],
   },
   {
     title: "Control-Augmented Autoregressive Diffusion for Data Assimilation",
     date: "2026",
-    venue: "Pre-print",
-    type: "Pre-print",
+    venue: "Neural Information Processing Systems (NeurIPS)",
+    type: "Conference",
     authors: "P. Srivastava, F. M. Sofian, F. Immorlano, K. Pandey, S. Mandt",
     links: [{ label: "arXiv", url: "https://arxiv.org/abs/2510.06637" }],
   },
@@ -34,7 +60,10 @@ const publications = [
     venue: "International Conference on Learning Representations (ICLR)",
     type: "Conference",
     authors: "F. Draxler, J. Will, F. M. Sofian, T. Karaletsos, S. Mandt",
-    links: [{ label: "arXiv", url: "https://arxiv.org/abs/2512.21323" }],
+    links: [
+      { label: "arXiv", url: "https://arxiv.org/abs/2512.21323" },
+      { label: "GitHub", url: "https://github.com/mandt-lab/ptp" },
+    ],
   },
   {
     title: "Variational Control for Guidance in Diffusion Models",
@@ -129,7 +158,15 @@ export default function Publications() {
 
               {pub.links.length > 0 && (
                 <div className="flex gap-2 mt-2 flex-wrap">
-                  {pub.links.map((link, idx) => (
+                  {pub.links.map((link, idx) =>
+                    !link.url ? (
+                      <span
+                        key={idx}
+                        className="bg-[#e8e8ed] text-[#6e6e73] dark:bg-white/5 dark:text-[#a1a1a6] px-3 py-1 rounded-full text-sm font-medium cursor-default"
+                      >
+                        {link.label}
+                      </span>
+                    ) : (
                     <a
                       key={idx}
                       href={link.url}
@@ -139,7 +176,8 @@ export default function Publications() {
                     >
                       {link.label}
                     </a>
-                  ))}
+                    )
+                  )}
                 </div>
               )}
             </div>

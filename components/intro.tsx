@@ -119,7 +119,7 @@ export default function Intro() {
 
           <a
             className="bg-white p-4 text-[#424245] flex items-center gap-2 text-[1.35rem] rounded-full focus:scale-[1.15] hover:scale-[1.15] hover:bg-[#0071e3] hover:text-white active:scale-105 transition cursor-pointer border border-[#d2d2d7] shadow-sm dark:!border-white/10 dark:!bg-white/10 dark:!text-white/70 dark:hover:!border-[#2997ff]/60 dark:hover:!bg-[#2997ff] dark:hover:!text-black"
-            href="https://github.com/farrinfedra"
+            href="https://scholar.google.com/citations?user=5tljxLMAAAAJ&hl=en"
             target="_blank"
           >
             <SiGooglescholar />
