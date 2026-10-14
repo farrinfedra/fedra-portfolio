@@ -1,3 +1,84 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Color tokens (RGB channels so Tailwind opacity modifiers work, e.g. bg-accent/10) */
+:root {
+  /* Warm-but-vivid palette: terracotta, fern green, indigo on white */
+  --bg: 255 255 255;
+  --surface: 250 246 241;
+  --ink: 40 36 32;
+  --muted: 102 94 84;
+  --faint: 148 139 127;
+  --line: 230 222 211;
+  --accent: 180 80 47;
+  --highlight: 236 146 112;
+  --science: 54 115 72;
+  --sage: 78 145 96;
+  --indigo: 63 95 168;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: 29 25 21;
+  --surface: 39 34 29;
+  --ink: 242 234 224;
+  --muted: 191 179 163;
+  --faint: 138 127 114;
+  --line: 58 51 44;
+  --accent: 238 140 108;
+  --highlight: 238 150 115;
+  --science: 134 204 152;
+  --sage: 120 190 140;
+  --indigo: 142 166 235;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-bg text-ink antialiased;
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    @apply bg-highlight/25;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent/60 ring-offset-2 ring-offset-bg rounded-md;
+  }
+}
+
+@layer components {
+  /* Light, tightly tracked serif used for all display type */
+  .display {
+    @apply font-serif font-light tracking-[-0.045em];
+  }
+
+  /* Marker-style highlight behind accent words */
+  .marker {
+    @apply bg-highlight/[0.15] text-accent;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[0.94rem] font-medium tracking-[-0.04em] transition-colors duration-200;
+  }
+  .btn-primary {
+    @apply btn bg-ink text-bg hover:bg-accent hover:text-bg;
+  }
+  .btn-outline {
+    @apply btn border border-ink text-ink hover:bg-ink hover:text-bg;
+  }
+  .btn-sm {
+    @apply px-3.5 py-1.5 text-[0.8rem];
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

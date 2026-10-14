@@ -1,69 +1,109 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
-import SmallSectionHeading from "./section-heading-small";
-import { FaLinkedin, FaEnvelope, FaGithub } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { FiCheck, FiCopy, FiMail } from "react-icons/fi";
+import { FaGithub, FaLinkedin, FaXTwitter } from "react-icons/fa6";
+import { SiGooglescholar } from "react-icons/si";
+import { profile, socials } from "@/lib/data";
+import SectionHeading from "./section-heading";
+import Reveal from "./reveal";
 
-const ContactMe = () => {
+const elsewhere = [
+  { label: "Google Scholar", href: socials.scholar, icon: SiGooglescholar },
+  { label: "GitHub", href: socials.github, icon: FaGithub },
+  { label: "LinkedIn", href: socials.linkedin, icon: FaLinkedin },
+  { label: "X / Twitter", href: socials.x, icon: FaXTwitter },
+];
+
+export default function Contact() {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      window.location.href = `mailto:${profile.email}`;
+    }
+  };
+
   return (
-    <section id="contact" className="flex flex-col md:w-[65rem] mb-12">
-      <motion.div
-        className="bg-gradient-to-b from-gray-100 dark:from-gray-800 rounded-lg py-12"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex items-center justify-center space-x-2 mb-8">
-          <SmallSectionHeading>Contact</SmallSectionHeading>
+    <section id="contact" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-20 sm:px-6">
+      <SectionHeading index="03" title="Get in touch" />
+
+      <Reveal className="grid gap-10 rounded-3xl border border-line bg-surface p-6 sm:p-10 md:grid-cols-[1.4fr_1fr]">
+        <div>
+          <div className="max-w-md space-y-4 text-lg leading-relaxed text-muted">
+            <p>
+              I&apos;m always happy to talk about research collaborations or new
+              opportunities.
+            </p>
+            <p>
+              If you&apos;re a woman in STEM and would like guidance, a sounding
+              board, or just a chat, please reach out. Supporting other women in
+              the field means a lot to me, wherever you are in your journey.
+            </p>
+            <p>Email is the best way to reach me.</p>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-2.5">
+            <a
+              href={`mailto:${profile.email}`}
+              className="btn-primary"
+            >
+              <FiMail />
+              {profile.email}
+            </a>
+            <button
+              onClick={copy}
+              aria-label="Copy email address"
+              className="btn-outline relative overflow-hidden px-4"
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={copied ? "done" : "copy"}
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -10, opacity: 0 }}
+                  transition={{ duration: 0.18 }}
+                  className="inline-flex items-center gap-2"
+                >
+                  {copied ? <FiCheck /> : <FiCopy />}
+                  {copied ? "Copied" : "Copy"}
+                </motion.span>
+              </AnimatePresence>
+            </button>
+          </div>
         </div>
 
-        <motion.div
-          className="flex flex-col md:flex-row w-full justify-center items-center space-y-4 md:space-y-0 md:space-x-4"
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          {[
-            { icon: FaLinkedin, text: "", href: "https://www.linkedin.com/in/farrin-marouf-sofian/" },
-            { icon: FaEnvelope, text: "farrinsofian@gmail.com", href: "mailto:farrinsofian@gmail.com" },
-            { icon: FaGithub, text: "", href: "https://github.com/farrinfedra", color: "text-gray-800 dark:text-gray-300" },
-            { icon: FaXTwitter, text: "", href: "https://twitter.com/farrinsofian" },
-          ].map((item, index) => (
-            <React.Fragment key={index}>
-              {index > 0 && <span className="text-gray-400 dark:text-gray-500 hidden md:inline">|</span>}
-              <motion.div
-                className="flex items-center space-x-2"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
-              >
+        <div>
+          <p className="mb-4 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-faint">
+            Elsewhere
+          </p>
+          <ul className="divide-y divide-line">
+            {elsewhere.map(({ label, href, icon: Icon }) => (
+              <li key={label}>
                 <a
-                  href={item.href}
+                  href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`hover:underline`}
+                  className="group flex items-center justify-between py-3 text-ink transition-colors hover:text-accent"
                 >
-                  <item.icon className={`h-8 w-8 ${item.color}`} />
+                  <span className="flex items-center gap-3">
+                    <Icon className="text-muted transition-colors group-hover:text-accent" />
+                    {label}
+                  </span>
+                  <span className="text-faint transition-transform group-hover:translate-x-1 group-hover:text-accent">
+                    →
+                  </span>
                 </a>
-                {item.text && (
-                  <a
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`text-lg font-semibold ${item.color} hover:underline`}
-                  >
-                    {item.text}
-                  </a>
-                )}
-              </motion.div>
-            </React.Fragment>
-          ))}
-        </motion.div>
-      </motion.div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Reveal>
     </section>
   );
-};
-
-export default ContactMe;
+}

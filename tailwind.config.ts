@@ -1,41 +1,36 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from "tailwindcss";
+
+const token = (name: string) => `rgb(var(--${name}) / <alpha-value>)`;
 
 const config: Config = {
-  darkMode: 'class',
+  darkMode: "class",
   content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      colors: {
+        bg: token("bg"),
+        surface: token("surface"),
+        ink: token("ink"),
+        muted: token("muted"),
+        faint: token("faint"),
+        line: token("line"),
+        accent: token("accent"),
+        highlight: token("highlight"),
+        science: token("science"),
+        sage: token("sage"),
+        indigo: token("indigo"),
       },
       fontFamily: {
-        // Replacing 'Poppins' with 'Inter' and adding the system font stack
-        sans: [
-          'Inter var', 
-          '"Helvetica Neue"', 
-          'Roboto', 
-          '"Segoe UI"', 
-          'ui-sans-serif', 
-          'system-ui', 
-          '-apple-system', 
-          'BlinkMacSystemFont', 
-          'Arial', 
-          '"Noto Sans"', 
-          'sans-serif', 
-          '"Apple Color Emoji"', 
-          '"Segoe UI Emoji"', 
-          '"Segoe UI Symbol"', 
-          '"Noto Color Emoji"'
-        ],
+        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        serif: ["var(--font-serif)", "ui-serif", "Georgia", "serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
     },
   },
   plugins: [],
-}
+};
 
-export default config
+export default config;

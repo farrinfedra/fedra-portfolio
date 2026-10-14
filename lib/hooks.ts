@@ -1,21 +1,39 @@
-import { useActiveSectionContext } from "@/context/active-section-context";
-import { useEffect } from "react";
-import { useInView } from "react-intersection-observer";
-import { SectionName } from "@/lib/types";
+"use client";
 
-export function useSectionInView(sectionName: SectionName, threshold = 0.75) {
-  const { ref, inView } = useInView({
-    threshold,
-  });
-  const { setActiveSection, timeOfLastClick } = useActiveSectionContext();
+import { useEffect, useState } from "react";
+
+// Returns the id of the section currently in the middle band of the viewport.
+export function useActiveSection(ids: readonly string[]) {
+  const [active, setActive] = useState(ids[0]);
 
   useEffect(() => {
-    if (inView && Date.now() - timeOfLastClick > 1000) {
-      setActiveSection(sectionName);
-    }
-  }, [inView, setActiveSection, timeOfLastClick, sectionName]);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        }
+      },
+      { rootMargin: "-40% 0px -55% 0px" }
+    );
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, [ids]);
 
-  return {
-    ref,
-  };
+  return active;
+}
+
+export function useScrolledPast(px: number) {
+  const [past, setPast] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setPast(window.scrollY > px);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [px]);
+
+  return past;
 }

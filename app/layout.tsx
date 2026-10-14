@@ -1,15 +1,23 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, Crimson_Pro, JetBrains_Mono } from "next/font/google";
+import Providers from "@/components/providers";
 import Navbar from "@/components/navbar";
-import ThemeContextProvider from "@/context/theme-context";
+import BackToTop from "@/components/back-to-top";
+import { themeInitScript } from "@/context/theme-context";
 
-const inter = Inter({ subsets: ["latin"] });
+const sans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans" });
+const serif = Crimson_Pro({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+});
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
   title: "Farrin Sofian",
   description:
-    "Farrin Sofian is a Ph.D. student at UC Irvine working on controllable and scalable generative AI.",
+    "Farrin Marouf Sofian is a Ph.D. student at UC Irvine working on generative modeling with diffusion models.",
 };
 
 export default function RootLayout({
@@ -18,17 +26,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="!scroll-smooth">
-      <body
-        className={`${inter.className} bg-[#f5f5f7] text-[#1d1d1f] relative pt-24 sm:pt-28 dark:bg-[#050505] dark:text-[#f5f5f7] dark:text-opacity-95`}
-      >
-        <ThemeContextProvider>
+    <html
+      lang="en"
+      className={`${sans.variable} ${serif.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className="font-sans">
+        <Providers>
           <Navbar />
-        
           {children}
-        </ThemeContextProvider>
-        
-        {/* <Footer /> */}
+          <BackToTop />
+        </Providers>
       </body>
     </html>
   );

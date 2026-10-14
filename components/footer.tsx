@@ -1,16 +1,14 @@
-import React from "react";
+import { profile } from "@/lib/data";
 
-const Footer = () => {
+export default function Footer() {
   return (
-    <footer className="mx-auto max-w-3xl px-4 sm:px-6 md:max-w-5xl ">
-      <hr className="w-full h-0.5 mx-auto mt-8 bg-neutral-200 border-0"></hr>
-      <div className="mx-auto  p-4 flex flex-col text-center text-neutral-900 md:flex-row md:justify-between">
-        <div className="flex flex-row items-center justify-center space-x-1 text-neutral-500 dark:text-neutral-100">
-          © 2024 Farrin Marouf Sofian<a href="/" className="hover:underline"></a>
-        </div>
+    <footer className="mx-auto max-w-6xl px-4 pb-10 pt-6 sm:px-6">
+      <div className="flex flex-col gap-2 border-t border-line pt-6 font-mono text-xs text-faint sm:flex-row sm:justify-between">
+        <p>
+          © {new Date().getFullYear()} {profile.name}
+        </p>
+        <p>Irvine, California</p>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}
