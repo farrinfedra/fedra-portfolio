@@ -52,7 +52,7 @@ export default function Hero({ board }: { board: React.ReactNode }) {
 
         <motion.div
           {...fadeUp(0.16)}
-          className="mt-6 max-w-xl space-y-4 text-[1.05rem] leading-relaxed text-muted"
+          className="mt-6 max-w-xl space-y-4 text-[1.08rem] font-[450] leading-relaxed text-ink/80"
         >
           <p>
             I&apos;m an early fourth-year Ph.D. student at UC Irvine, advised by{" "}
@@ -67,10 +67,15 @@ export default function Hero({ board }: { board: React.ReactNode }) {
             and supported by the Chan Zuckerberg Initiative.
           </p>
           <p>
-            I work on generative modeling with diffusion models: steering
-            pretrained models at test time, fine-tuning them toward rewards, and
-            designing new ways to train foundation models, with applications
-            from images and language to science. Previously, I was an AI
+            I work on generative modeling with{" "}
+            <strong className="font-semibold text-ink">diffusion models</strong>:
+            steering pretrained models at{" "}
+            <strong className="font-semibold text-accent">test time</strong>,{" "}
+            <strong className="font-semibold text-accent">fine-tuning toward rewards</strong>,
+            and designing new ways to train{" "}
+            <strong className="font-semibold text-indigo">foundation models</strong>,
+            with applications from images and language to{" "}
+            <strong className="font-semibold text-sage">science</strong>. Previously, I was an AI
             Resident at the{" "}
             <a
               href="https://chanzuckerberg.com/"

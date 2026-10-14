@@ -9,28 +9,29 @@ import { SiArxiv } from "react-icons/si";
 import { publicationGroups, type Publication, type Tag } from "@/lib/data";
 import SectionHeading from "./section-heading";
 import Reveal from "./reveal";
-import { LayerStack, RewardPath } from "./glass-trio";
+import { LayerStack, RewardPath, WeatherGlobe } from "./glass-trio";
 
 // Each category reuses its artwork and color from the intro.
-const groupThemes: Record<
-  string,
-  { Art?: React.ComponentType<{ still?: boolean }>; glow: string; card: string; index: string }
-> = {
+type Artwork = { Art: React.ComponentType<{ still?: boolean }>; glow: string; size: string };
+
+const groupThemes: Record<string, { arts: Artwork[]; card: string; index: string }> = {
   "foundation-models": {
-    Art: LayerStack,
-    glow: "bg-indigo/10",
+    arts: [{ Art: LayerStack, glow: "bg-indigo/10", size: "h-24 w-32" }],
     card: "border-indigo/20 bg-indigo/[0.04] hover:border-indigo/40",
     index: "text-indigo",
   },
   "test-time-scaling": {
-    Art: RewardPath,
-    glow: "bg-accent/10",
+    // reward path + the weather globe (this group holds the weather / data assimilation paper)
+    arts: [
+      { Art: RewardPath, glow: "bg-accent/10", size: "h-24 w-32" },
+      { Art: WeatherGlobe, glow: "bg-sage/10", size: "h-20 w-20" },
+    ],
     card: "border-accent/20 bg-accent/[0.04] hover:border-accent/40",
     index: "text-accent",
   },
 };
 const neutralTheme = {
-  glow: "",
+  arts: [] as Artwork[],
   card: "border-line bg-surface hover:border-ink/20",
   index: "text-accent",
 };
@@ -65,7 +66,7 @@ function TagPill({ tag, active }: { tag: Tag; active?: boolean }) {
     <span
       className={clsx(
         "rounded-full px-2.5 py-0.5 text-xs",
-        science ? "bg-science/[0.15] text-science" : "bg-ink/[0.05] text-muted",
+        science ? "bg-sage/[0.14] font-medium text-sage" : "bg-ink/[0.05] text-muted",
         active && "ring-1 ring-current"
       )}
     >
@@ -272,7 +273,6 @@ export default function Publications() {
           const index = publicationGroups.findIndex((g) => g.id === group.id) + 1;
           const hasEqual = group.papers.some((p) => p.authors.includes("*"));
           const theme = groupThemes[group.id] ?? neutralTheme;
-          const Art = "Art" in theme ? theme.Art : undefined;
           return (
             <motion.div
               key={group.id}
@@ -285,12 +285,16 @@ export default function Publications() {
             >
               {/* Category: stays pinned while its papers scroll by */}
               <Reveal className="lg:sticky lg:top-24 lg:self-start">
-                {Art && (
-                  <div aria-hidden className="relative mb-6 h-24 w-32">
-                    <div className={`absolute inset-2 rounded-full blur-2xl ${theme.glow}`} />
-                    <div className="relative h-full w-full">
-                      <Art still />
-                    </div>
+                {theme.arts.length > 0 && (
+                  <div aria-hidden className="mb-6 flex items-end gap-4">
+                    {theme.arts.map(({ Art, glow, size }, i) => (
+                      <div key={i} className={`relative ${size}`}>
+                        <div className={`absolute inset-2 rounded-full blur-2xl ${glow}`} />
+                        <div className="relative h-full w-full">
+                          <Art still />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
                 <p className={`mb-3 font-mono text-xs ${theme.index}`}>
@@ -300,7 +304,6 @@ export default function Publications() {
                   {group.title}
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted">{group.description}</p>
-                {hasEqual && <p className="mt-3 text-xs text-faint">* Equal contribution</p>}
               </Reveal>
 
               <div className="space-y-4">
@@ -314,6 +317,9 @@ export default function Publications() {
                     />
                   ))}
                 </AnimatePresence>
+                {hasEqual && (
+                  <p className="pt-1 text-right text-xs text-faint">* Equal contribution</p>
+                )}
               </div>
             </motion.div>
           );

@@ -28,6 +28,7 @@ export const navLinks = [
 // ---------------------------------------------------------------------------
 // News
 // kind: "paper" | "honor" | "career" — controls the small label next to each item.
+// text supports light markup: **bold** and [link text](url).
 // ---------------------------------------------------------------------------
 
 export type NewsItem = {
@@ -41,20 +42,17 @@ export const news: NewsItem[] = [
   {
     date: "Sep 2026",
     kind: "paper",
-    text: "Two papers accepted to NeurIPS 2026: Hierarchical Variational Policies for Reward-Guided Diffusion and Control-Augmented Autoregressive Diffusion for Data Assimilation.",
-    href: "#publications",
+    text: "Two papers accepted to **NeurIPS 2026**: [Hierarchical Variational Policies for Reward-Guided Diffusion](https://arxiv.org/abs/2605.21661) and [Control-Augmented Autoregressive Diffusion for Data Assimilation](https://arxiv.org/abs/2510.06637).",
   },
   {
     date: "Jan 2026",
     kind: "paper",
-    text: "Parallel Token Prediction for Language Models accepted to ICLR 2026.",
-    href: "https://arxiv.org/abs/2512.21323",
+    text: "[Parallel Token Prediction for Language Models](https://arxiv.org/abs/2512.21323) accepted to **ICLR 2026**.",
   },
   {
     date: "May 2025",
     kind: "paper",
-    text: "Variational Control for Guidance in Diffusion Models accepted to ICML 2025.",
-    href: "https://arxiv.org/abs/2502.03686",
+    text: "[Variational Control for Guidance in Diffusion Models](https://arxiv.org/abs/2502.03686) accepted to **ICML 2025**.",
   },
   {
     date: "2025",

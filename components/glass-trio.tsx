@@ -132,7 +132,7 @@ function spiral(cx: number, cy: number, turns: number, phase: number) {
   return "M " + pts.join(" L ");
 }
 
-function WeatherGlobe() {
+export function WeatherGlobe({ still = false }: { still?: boolean }) {
   const uid = useId().replace(/:/g, "");
   const C = 100;
   const R = 78;
@@ -173,7 +173,7 @@ function WeatherGlobe() {
             strokeLinecap="round"
             strokeDasharray="10 14"
             style={{ stroke: v("sage", 0.75) }}
-            animate={{ strokeDashoffset: [0, -48] }}
+            animate={still ? undefined : { strokeDashoffset: [0, -48] }}
             transition={{ duration: 3 + k, repeat: Infinity, ease: "linear" }}
           />
         ))}
@@ -182,7 +182,7 @@ function WeatherGlobe() {
       {/* cyclone */}
       <motion.g
         style={{ originX: "108px", originY: "92px" }}
-        animate={{ rotate: -360 }}
+        animate={still ? undefined : { rotate: -360 }}
         transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
       >
         <path d={spiral(108, 92, 1.6, 0)} fill="none" strokeWidth="2.2" strokeLinecap="round" className="stroke-white opacity-90 dark:opacity-60" />
@@ -196,14 +196,14 @@ function WeatherGlobe() {
   );
 }
 
-function Science() {
+export function Science({ still = false }: { still?: boolean }) {
   return (
     <div className="relative h-full w-full">
       <div className="absolute right-0 top-0 h-[54%] w-[70%]">
-        <Molecule />
+        <Molecule still={still} />
       </div>
       <div className="absolute bottom-0 left-0 h-[56%] w-[68%]">
-        <WeatherGlobe />
+        <WeatherGlobe still={still} />
       </div>
     </div>
   );

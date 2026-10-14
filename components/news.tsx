@@ -22,11 +22,39 @@ const kindLabels: Record<NewsItem["kind"], string> = {
   career: "Career",
 };
 
+// Renders the light markup used in news text: **bold** and [link text](url).
+function RichText({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/).map((part, i) => {
+        const bold = part.match(/^\*\*(.+)\*\*$/);
+        if (bold) return <strong key={i} className="font-semibold">{bold[1]}</strong>;
+        const link = part.match(/^\[(.+)\]\((.+)\)$/);
+        if (link) {
+          const external = link[2].startsWith("http");
+          return (
+            <a
+              key={i}
+              href={link[2]}
+              target={external ? "_blank" : undefined}
+              rel={external ? "noopener noreferrer" : undefined}
+              className="underline decoration-accent/40 underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+            >
+              {link[1]}
+            </a>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </>
+  );
+}
+
 function NewsRow({ item }: { item: NewsItem }) {
   const external = item.href?.startsWith("http");
   const body = (
     <>
-      {item.text}
+      <RichText text={item.text} />
       {item.href && (
         <FiArrowUpRight className="ml-1 inline -translate-y-px opacity-0 transition-opacity group-hover:opacity-100" />
       )}
