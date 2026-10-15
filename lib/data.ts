@@ -15,7 +15,7 @@ export const socials = {
   scholar: "https://scholar.google.com/citations?user=5tljxLMAAAAJ&hl=en",
   github: "https://github.com/farrinfedra",
   linkedin: "https://www.linkedin.com/in/farrin-marouf-sofian/",
-  x: "https://twitter.com/farrinsofian",
+  x: "https://x.com/farrinsofian",
 };
 
 export const navLinks = [
@@ -87,9 +87,7 @@ export type Tag =
   | "Diffusion"
   | "LLMs"
   | "AI for Science"
-  | "Inverse Problems"
-  | "Multimodal"
-  | "NLP";
+  | "Inverse Problems";
 
 export type Publication = {
   title: string;
@@ -240,7 +238,7 @@ export const publicationGroups: PublicationGroup[] = [
           "Conditions pretrained image diffusion models on audio, enabling sound-driven image generation and editing.",
         abstract:
           "We are witnessing a revolution in conditional image synthesis with the recent success of large scale text-to-image generation methods. This success also opens up new opportunities in controlling the generation and editing process using multi-modal input. While spatial control using cues such as depth, sketch, and other images has attracted a lot of research, we argue that another equally effective modality is audio since sound and sight are two main components of human perception. Hence, we propose a method to enable audio-conditioning in large scale image diffusion models. Our method first maps features obtained from audio clips to tokens that can be injected into the diffusion model in a fashion similar to text tokens. We introduce additional audio-image cross attention layers which we finetune while freezing the weights of the original layers of the diffusion model. In addition to audio conditioned image generation, our method can also be utilized in conjunction with diffusion based editing methods to enable audio conditioned image editing.",
-        tags: ["Diffusion", "Multimodal"],
+        tags: ["Diffusion"],
         links: {
           arxiv: "https://arxiv.org/abs/2405.00878",
           github: "https://github.com/BurakCanBiner/SonicDiffusion",
@@ -256,7 +254,7 @@ export const publicationGroups: PublicationGroup[] = [
           "The first large-scale dataset and baselines for Turkish grammatical error correction and detection.",
         abstract:
           "Grammatical Error Detection and Correction (GEC) tools have proven useful for native speakers and second language learners. Developing such tools requires a large amount of parallel, annotated data, which is unavailable for most languages. Synthetic data generation is a common practice to overcome the scarcity of such data. However, it is not straightforward for morphologically rich languages like Turkish due to complex writing rules that require phonological, morphological, and syntactic information. In this work, we present a flexible and extensible synthetic data generation pipeline for Turkish covering more than 20 expert-curated grammar and spelling rules implemented through complex transformation functions. Using this pipeline, we derive 130,000 high-quality parallel sentences from professionally edited articles. Additionally, we create a more realistic test set by manually annotating a set of movie reviews. We implement three baselines formulating the task as neural machine translation, sequence tagging, and prefix tuning with a pretrained decoder-only model, achieving strong results.",
-        tags: ["NLP"],
+        tags: [],
         links: {
           arxiv: "https://arxiv.org/abs/2309.11346",
           github: "https://github.com/GGLAB-KU/gecturk",

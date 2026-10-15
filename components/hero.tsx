@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { FiArrowDownRight, FiFileText, FiMail } from "react-icons/fi";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { SiGooglescholar } from "react-icons/si";
+import { FaXTwitter } from "react-icons/fa6";
 import { profile, socials } from "@/lib/data";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -19,6 +20,7 @@ const linkButtons = [
   { label: "Google Scholar", href: socials.scholar, icon: SiGooglescholar },
   { label: "GitHub", href: socials.github, icon: FaGithub },
   { label: "LinkedIn", href: socials.linkedin, icon: FaLinkedin },
+  { label: "X", href: socials.x, icon: FaXTwitter },
   { label: "Email", href: `mailto:${profile.email}`, icon: FiMail },
 ];
 
@@ -107,12 +109,14 @@ export default function Hero({ board }: { board: React.ReactNode }) {
               target={href.startsWith("mailto") ? undefined : "_blank"}
               rel="noopener noreferrer"
               aria-label={label}
-              title={label}
-              className="group btn-outline h-10 gap-0 px-[0.7rem] py-0 text-[0.9rem]"
+              className="group btn-outline relative h-10 w-10 justify-center p-0"
             >
               <Icon className="h-[1.1rem] w-[1.1rem] shrink-0" />
-              {/* label slides open on hover / keyboard focus */}
-              <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 ease-out group-hover:ml-2 group-hover:max-w-[9rem] group-hover:opacity-100 group-focus-visible:ml-2 group-focus-visible:max-w-[9rem] group-focus-visible:opacity-100">
+              {/* name fades in below the icon on hover / keyboard focus; the button itself never resizes */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 -translate-y-1 whitespace-nowrap text-xs font-medium text-muted opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+              >
                 {label}
               </span>
             </a>
