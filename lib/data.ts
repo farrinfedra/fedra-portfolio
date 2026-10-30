@@ -40,6 +40,11 @@ export type NewsItem = {
 
 export const news: NewsItem[] = [
   {
+    date: "Oct 2026",
+    kind: "paper",
+    text: "Our paper [Parallel Language Models via Variational Decoding](https://arxiv.org/pdf/2610.26693) is now on arXiv! Check out the [project page](https://www.justuswill.com/plm/).",
+  },
+  {
     date: "Sep 2026",
     kind: "paper",
     text: "Two papers accepted to **NeurIPS 2026**: [Hierarchical Variational Policies for Reward-Guided Diffusion](https://arxiv.org/abs/2605.21661) and [Control-Augmented Autoregressive Diffusion for Data Assimilation](https://arxiv.org/abs/2510.06637).",
@@ -53,6 +58,11 @@ export const news: NewsItem[] = [
     date: "May 2025",
     kind: "paper",
     text: "[Variational Control for Guidance in Diffusion Models](https://arxiv.org/abs/2502.03686) accepted to **ICML 2025**.",
+  },
+  {
+    date: "2025",
+    kind: "honor",
+    text: "Received the **Dean's Fellowship** at UC Irvine.",
   },
   {
     date: "2025",
@@ -96,11 +106,14 @@ export type Publication = {
   venueFull?: string;
   status: "published" | "preprint";
   oneLiner: string;
+  role?: string; // short highlighted contribution, e.g. "Led the post-training team"
+  note?: string; // brief context shown next to the role
   abstract?: string;
   tags: Tag[];
   links: {
     arxiv?: string;
     arxivSoon?: boolean;
+    pdf?: string; // self-hosted PDF, e.g. "/rad/RAD.pdf"
     github?: string;
     project?: string;
     blog?: string;
@@ -129,7 +142,7 @@ export const publicationGroups: PublicationGroup[] = [
         oneLiner:
           "A new class of diffusion models that are faster to train, faster to sample, and parameter-efficient, with a smooth latent space.",
         tags: ["Diffusion"],
-        links: { arxivSoon: true },
+        links: { pdf: "/rad/RAD.pdf", project: "/rad", arxivSoon: true },
       },
       {
         title: "Parallel Language Models via Variational Decoding",
@@ -139,8 +152,13 @@ export const publicationGroups: PublicationGroup[] = [
         status: "preprint",
         oneLiner:
           "Pre-training and post-training a large language model that decodes many tokens in parallel.",
+        role: "Led the post-training team",
+        note: "Large-scale collaboration with ETH Zurich and Swiss AI",
         tags: ["LLMs"],
-        links: { arxivSoon: true },
+        links: {
+          arxiv: "https://arxiv.org/pdf/2610.26693",
+          project: "https://www.justuswill.com/plm/",
+        },
       },
       {
         title: "Parallel Token Prediction for Language Models",

@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Representation-Augmented Diffusions (RAD)</title>
+  <meta name="description" content="RAD is a new class of diffusion models that predict a representation at every denoising step and denoise with it: 27× faster training than REPA, 10× fewer sampling steps, 4.8× fewer parameters, and a smooth latent space.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Representation-Augmented Diffusions (RAD)">
+  <meta property="og:description" content="A new class of diffusion models that are faster to train, faster to sample, and parameter-efficient, with a smooth latent space. Farrin Marouf Sofian, Kushagra Pandey, Stephan Mandt (UC Irvine).">
+  <meta property="og:image" content="/rad/assets/img/imagenet/leopard.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23C4502F'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23fff'/%3E%3Ccircle cx='7' cy='8' r='1.4' fill='%23fff' opacity='.6'/%3E%3Ccircle cx='25' cy='9' r='1.2' fill='%23fff' opacity='.5'/%3E%3Ccircle cx='24' cy='24' r='1.4' fill='%23fff' opacity='.6'/%3E%3Ccircle cx='8' cy='24' r='1' fill='%23fff' opacity='.4'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400&family=Plus+Jakarta+Sans:wght@300;400;500;700&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+  <link rel="stylesheet" href="/rad/assets/css/style.css">
+</head>
+<body>
+<script>
+  /* open in the detailed view when linked with ?view=detailed or when the reader chose it last time */
+  try {
+    var v = new URLSearchParams(location.search).get("view") || localStorage.getItem("rad-view");
+    if (v === "detailed") document.body.classList.add("is-dense");
+  } catch (e) {}
+</script>
+
+<!-- section nav: appears once the intro scrolls away -->
+<nav class="secnav" id="secnav" aria-label="Sections">
+  <a href="#top" class="home">RAD</a>
+  <a href="#method">Method</a>
+  <a href="#efficiency">Efficiency</a>
+  <a href="#results">Results</a>
+  <a href="#samples">Samples</a>
+  <a href="#interpolation">Interpolation</a>
+  <a href="#cite">Cite</a>
+  <button class="secnav-mode" type="button" data-mode-toggle title="Back to overview">Detailed <span aria-hidden="true">×</span></button>
+</nav>
+
+<div class="wrap">
+  <main id="top">
+
+    <!-- ================= intro ================= -->
+    <header class="hero">
+      <div class="collage" id="collage" aria-hidden="true"></div>
+      <div class="hero-body">
+        <div class="eyebrow rv"><b>RAD</b> &nbsp;/&nbsp; 2026</div>
+        <h1 class="paper-title rv">Representation-Augmented Diffusions</h1>
+        <p class="headline rv">
+          A new class of diffusion models that are <span class="hl">faster to train</span>,
+          <span class="hl">faster to sample</span>, and <span class="hl">parameter-efficient</span>,
+          with a <em>smooth</em> latent space.
+        </p>
+        <div class="hero-stats rv">
+          <div><b>70×</b><span>fewer training iterations than standard diffusion</span></div>
+          <div><b>10×</b><span>fewer sampling steps</span></div>
+          <div><b>4.8×</b><span>fewer parameters at equal FID</span></div>
+        </div>
+        <div class="authors rv">
+          <span class="who">Farrin Marouf Sofian<sup>*</sup>, Kushagra Pandey<sup>*</sup>, Stephan Mandt</span><br>
+          <span class="aff">University of California, Irvine &nbsp;·&nbsp; <sup>*</sup>equal contribution</span>
+        </div>
+        <nav class="links rv">
+          <a class="btn" data-link="pdf" href="#"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 0h5.5L14 4.5V14a2 2 0 01-2 2H4a2 2 0 01-2-2V2a2 2 0 012-2zm5 1.5V5h3.5L9 1.5zM5 8.25a.75.75 0 000 1.5h6a.75.75 0 000-1.5H5zm0 3a.75.75 0 000 1.5h4a.75.75 0 000-1.5H5z"/></svg>Paper</a>
+          <a class="btn" data-link="arxiv" href="#"><i class="ai ai-arxiv" aria-hidden="true"></i>arXiv<span class="soon">soon</span></a>
+          <a class="btn" data-link="code" href="#"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>Code<span class="soon">soon</span></a>
+          <a class="btn ghost" href="#cite">BibTeX</a>
+        </nav>
+      </div>
+      <a class="scroll-cue" href="#method">how it works <span>↓</span></a>
+    </header>
+
+    <!-- ================= 01 method ================= -->
+    <section id="method">
+      <div class="sec-head">
+        <span class="pill rv"><span class="n">01</span>Method</span>
+        <h2 class="sec-title rv">
+          <svg viewBox="0 0 60 50" aria-hidden="true"><g fill="#1A1C1C"><circle cx="6" cy="8" r="1.6" opacity=".3"/><circle cx="14" cy="20" r="1.3" opacity=".45"/><circle cx="4" cy="30" r="1.1" opacity=".3"/><circle cx="20" cy="6" r="1.2" opacity=".4"/><circle cx="24" cy="30" r="1.6" opacity=".6"/><circle cx="12" cy="42" r="1.2" opacity=".35"/></g><path d="M28 27 C 38 25, 44 22, 50 16" fill="none" stroke="#1A1C1C" stroke-width="1.4"/><path d="M50 16 l-6 1.2 M50 16 l-1.6 5.8" stroke="#1A1C1C" stroke-width="1.4" fill="none" stroke-linecap="round"/><circle cx="53" cy="13" r="4" fill="#C4502F"/></svg>
+          <span class="t"><span class="a">A representation</span><span class="b">at every step</span></span>
+        </h2>
+      </div>
+
+      <p class="intro rv">
+        Standard diffusion models only learn to denoise; whatever semantics they pick up stay buried inside the network.
+        RAD gives the model a compact latent representation <span data-texi="\mathbf{u}_t">u<sub>t</sub></span> at every step: it
+        <b>predicts</b> <span data-texi="\mathbf{u}_t">u<sub>t</sub></span> from the noisy state <span data-texi="\mathbf{x}_t">x<sub>t</sub></span>,
+        then <b>denoises with it</b>. These latents are learned by aligning them with an external representation model
+        (<em>external alignment</em>) or with the model's own features (<em>self-supervised, internal alignment</em>).
+      </p>
+      <div class="dense notation" aria-label="Notation">
+        <span class="sym"><b data-texi="\mathbf{x}_t">x<sub>t</sub></b>noisy latent at time t</span>
+        <span class="sym acc"><b data-texi="\mathbf{u}_t">u<sub>t</sub></b>representation</span>
+        <span class="sym acc"><b data-texi="p_\phi">p<sub>ϕ</sub></b>representation policy</span>
+        <span class="sym"><b data-texi="p_\theta">p<sub>θ</sub></b>denoising policy</span>
+        <span class="sym"><b data-texi="q">q</b>noising process</span>
+        <span class="sym ind"><b data-texi="\mathbf{f}_{\mathrm{pre}}">f<sub>pre</sub></b>frozen encoder (DINOv2 in our runs)</span>
+        <span class="sym"><b data-texi="h_\phi">h<sub>ϕ</sub></b>projector on block ℓ</span>
+        <span class="sym"><b data-texi="\alpha_t{=}1{-}t,\ \sigma_t{=}t">α<sub>t</sub>=1−t, σ<sub>t</sub>=t</b>interpolant</span>
+        <span class="sym"><b data-texi="\beta">β</b>policy scale</span>
+      </div>
+
+      <figure class="gm-anim rv" id="gm" aria-label="Animated graphical model of RAD's generative process">
+        <div class="gm-scroll"><div class="gm-stage" id="gm-stage"></div></div>
+        <figcaption class="gm-foot">
+          <div class="gm-cap"><span class="gm-k" id="gm-k">1 / 7</span><span id="gm-cap"></span></div>
+          <div class="gm-ctrl">
+            <div class="gm-dots" id="gm-dots"></div>
+            <button class="play" id="gm-play" type="button">❚❚ pause</button>
+          </div>
+        </figcaption>
+      </figure>
+
+      <!-- three moves -->
+      <div class="moves">
+        <div class="move rv">
+          <div class="k">01</div>
+          <h3>Predict</h3>
+          <p>An MLP head on denoiser block ℓ reads <span data-texi="\mathbf{x}_t">x<sub>t</sub></span> and samples a representation.</p>
+          <div class="chip" data-texi="\mathbf{u}_t \sim p_\phi(\mathbf{u}_t \mid \mathbf{x}_t)">u<sub>t</sub> ~ p<sub>ϕ</sub>(u<sub>t</sub> | x<sub>t</sub>)</div>
+        </div>
+        <div class="move rv">
+          <div class="k">02</div>
+          <h3>Feed back</h3>
+          <p>The representation is compressed into one token and added back into the denoiser at the same block.</p>
+          <div class="chip" data-texi="\mathbf{x}^{\ell}_t \leftarrow \mathbf{x}^{\ell}_t + \mathrm{MLP}(\mathbf{u}_t)">x<sub>t</sub><sup>ℓ</sup> ← x<sub>t</sub><sup>ℓ</sup> + MLP(u<sub>t</sub>)</div>
+        </div>
+        <div class="move rv">
+          <div class="k">03</div>
+          <h3>Denoise</h3>
+          <p>The remaining SiT blocks predict the velocity, now conditioned on the representation.</p>
+          <div class="chip" data-texi="\mathbf{v}_\theta(\mathbf{x}_t, \mathbf{u}_t, t)">v<sub>θ</sub>(x<sub>t</sub>, u<sub>t</sub>, t)</div>
+        </div>
+      </div>
+
+      <!-- detailed: the model, step by step -->
+      <div class="dense dblock rail" data-ref="Sec. 2 · App. A.3">
+        <h3 class="sub-h">The model, step by step</h3>
+        <ol>
+          <li class="dstep">
+            <div class="dnum">1</div>
+            <div class="dbody">
+              <h4>Generative process <span class="eqref">Eq. 1–2</span></h4>
+              <div class="tex" data-tex="p_{\theta,\phi}(\mathbf{x}_{0:T},\mathbf{u}_{1:T}) = p(\mathbf{x}_T)\prod_{t=1}^{T} {\color{#C4502F}p_{\phi}(\mathbf{u}_t\mid\mathbf{x}_t)}\;p_{\theta}(\mathbf{x}_{t-1}\mid\mathbf{x}_t,\mathbf{u}_t)"></div>
+              <p class="say">Each step samples a representation first, then a denoising step consistent with it.</p>
+              <div class="tex" data-tex="p_{\theta,\phi}(\mathbf{x}_{t-1}\mid\mathbf{x}_t)=\mathbb{E}_{\mathbf{u}_t\sim p_\phi}\big[\,p_\theta(\mathbf{x}_{t-1}\mid\mathbf{x}_t,\mathbf{u}_t)\,\big]"></div>
+              <p class="say">Averaging over <span data-texi="\mathbf{u}_t">u<sub>t</sub></span> makes every transition a <b>continuous mixture</b> of Gaussians. It is more expressive than one Gaussian, which is why RAD tolerates large steps.</p>
+            </div>
+          </li>
+          <li class="dstep">
+            <div class="dnum">2</div>
+            <div class="dbody">
+              <h4>Noising process <span class="eqref">Eq. 3, 5</span></h4>
+              <div class="tex" data-tex="q(\mathbf{x}_{1:T},\mathbf{u}_{1:T}\mid\mathbf{x}_0)=\prod_{t=1}^{T} q(\mathbf{x}_t\mid\mathbf{x}_{t-1})\;{\color{#4B44B0}q(\mathbf{u}_t\mid\mathbf{x}_{\le t})},\qquad {\color{#4B44B0}q(\mathbf{u}_t\mid\mathbf{x}_{\le t})}=\mathcal{N}\big(\alpha_t\,\mathbf{f}_{\mathrm{pre}}(\mathbf{x}_0),\ \beta^2\sigma_t^2\mathbf{I}\big)"></div>
+              <p class="say">While training, <span data-texi="\mathbf{u}_t">u<sub>t</sub></span> is a noised copy of the clean image's features from a frozen encoder, on the same schedule as <span data-texi="\mathbf{x}_t">x<sub>t</sub></span>: coarse at high noise, sharp at low noise. It sees what the generator cannot, so it acts as a teacher.</p>
+            </div>
+          </li>
+          <li class="dstep">
+            <div class="dnum">3</div>
+            <div class="dbody">
+              <h4>Variational bound <span class="eqref">Eq. 4</span></h4>
+              <div class="tex" data-tex="\log p(\mathbf{x}_0)\ \ge\ \sum_{t=1}^{T}\mathbb{E}\Big[\underbrace{\mathbb{E}_{\mathbf{u}_t}\big[\log p_\theta(\mathbf{x}_{t-1}\mid\mathbf{x}_t,\mathbf{u}_t)\big]}_{\text{denoising}}\;-\;\underbrace{D_{\mathrm{KL}}\big(q(\mathbf{u}_t\mid\mathbf{x}_{\le t})\,\|\,p_\phi(\mathbf{u}_t\mid\mathbf{x}_t)\big)}_{\text{alignment}}\Big]"></div>
+              <p class="say">A conditional VAE at every step: rebuild the cleaner state from <span data-texi="\mathbf{u}_t">u<sub>t</sub></span>, and keep the model's own <span data-texi="\mathbf{u}_t">u<sub>t</sub></span> close to the teacher's. The KL is an information bottleneck.</p>
+              <details class="proof">
+                <summary>Proof sketch</summary>
+                <ul>
+                  <li>Use the noising process as the variational distribution and apply Jensen's inequality.</li>
+                  <li>By Markov + Bayes, <span data-texi="\textstyle\prod_t q(\mathbf{x}_t\mid\mathbf{x}_{t-1}) = q(\mathbf{x}_T\mid\mathbf{x}_0)\prod_{t\ge2} q(\mathbf{x}_{t-1}\mid\mathbf{x}_t,\mathbf{x}_0)">∏ q(x_t | x_t−1) telescopes</span>, so each step's terms group together.</li>
+                  <li>What remains (posterior entropies and the prior KL) depends only on the noising process: a constant in θ, ϕ.</li>
+                </ul>
+              </details>
+            </div>
+          </li>
+          <li class="dstep">
+            <div class="dnum">4</div>
+            <div class="dbody">
+              <h4>Plug in Gaussians <span class="eqref">App. A.3.2</span></h4>
+              <div class="tex" data-tex="p_\phi(\mathbf{u}_t\mid\mathbf{x}_t)=\mathcal{N}\big(\alpha_t h_\phi(\mathbf{x}_t,t),\ \beta^2\sigma_t^2\mathbf{I}\big)\ \Rightarrow\ D_{\mathrm{KL}}=\tfrac{\mathrm{SNR}(t)}{2\beta^2}\big\|\mathbf{f}_{\mathrm{pre}}(\mathbf{x}_0)-h_\phi(\mathbf{x}_t,t)\big\|_2^2,\quad \mathrm{SNR}(t)=\tfrac{\alpha_t^2}{\sigma_t^2}"></div>
+              <p class="say">Same covariance on both sides, so the KL is just a distance between means: REPA's alignment loss, derived instead of assumed.</p>
+              <div class="tex" data-tex="\mathbb{E}\big[\log p_\theta(\mathbf{x}_{t-1}\mid\mathbf{x}_t,\mathbf{u}_t)\big] = -\,w_t\,\big\|\mathbf{v}_\theta(\mathbf{x}_t,\mathbf{u}_t,t)-\mathbf{v}_{\mathrm{ref}}\big\|_2^2+\text{const},\qquad \mathbf{v}_{\mathrm{ref}}=\dot\alpha_t\mathbf{x}_0+\dot\sigma_t\boldsymbol{\epsilon}"></div>
+              <p class="say">With a velocity network the denoising term becomes a weighted velocity regression. Set <span data-texi="w_t=1">w<sub>t</sub> = 1</span> as usual and you get the loss below.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- the loss -->
+      <div class="loss rv">
+        <div class="loss-head">
+          <span class="lab">THE LOSS</span>
+          <span class="sub">a weighted variational lower bound on <span data-texi="\log p(\mathbf{x}_0)">log p(x<sub>0</sub>)</span></span>
+        </div>
+        <div class="tex" data-tex="\mathcal{L}(\theta,\phi)=\mathbb{E}\Big[\,{\color{#C4502F}\underbrace{\big\|\mathbf{v}_{\theta}(\mathbf{x}_t,\mathbf{u}_t,t)-\mathbf{v}_{\mathrm{ref}}\big\|_2^2}_{\text{denoise with }\mathbf{u}_t}}\;+\;{\color{#4B44B0}\underbrace{\tfrac{\mathrm{SNR}(t)}{2\beta^2}\big\|\mathbf{f}_{\mathrm{pre}}(\mathbf{x}_0)-h_{\phi}(\mathbf{x}_t,t)\big\|_2^2}_{\text{align}}}\,\Big]"></div>
+        <div class="loss-terms">
+          <div class="term t-den"><b>Denoising</b><span>The usual velocity loss, except the denoiser also sees the representation <span data-texi="\mathbf{u}_t">u<sub>t</sub></span>.</span></div>
+          <div class="term t-ali"><b>Alignment</b><span>Pulls the predicted representation toward the target features (here a frozen encoder). It falls out of the bound as a KL term, not a heuristic add-on.</span></div>
+        </div>
+        <p class="dense say loss-note">In practice the weight <span data-texi="\mathrm{SNR}(t)/2\beta^2">SNR(t)/2β²</span>, which blows up as <span data-texi="t\to0">t → 0</span>, is replaced by its bounded form <span data-texi="\lambda_t=\alpha_t^2/(\alpha_t^2+\beta^2\sigma_t^2)">λ<sub>t</sub> = α<sub>t</sub>²/(α<sub>t</sub>² + β²σ<sub>t</sub>²)</span> (× 0.5), with <span data-texi="t\sim\mathcal{U}(0,1)">t ~ U(0,1)</span> and <span data-texi="\beta=1">β = 1</span>.</p>
+      </div>
+
+      <!-- key insight -->
+      <div class="insight rv">
+        <div class="insight-k">KEY INSIGHT</div>
+        <p>In representation alignment, representations are learned but then discarded: they are never used for generation.
+          Remove <span data-texi="\mathbf{u}_t">u<sub>t</sub></span> from RAD's denoiser and these methods, such as <b>REPA</b>, become special cases.</p>
+      </div>
+
+      <!-- detailed: architecture -->
+      <div class="dense dblock" data-ref="App. A.8">
+        <div class="arch-head">
+          <h3 class="sub-h">Architecture</h3>
+          <div class="seg" id="arch-seg" role="tablist" aria-label="Show path">
+            <button type="button" data-arch="train" class="on">Training</button>
+            <button type="button" data-arch="gen">Generation</button>
+          </div>
+        </div>
+        <div class="arch-scroll">
+          <svg class="arch" id="arch" data-mode="train" viewBox="0 0 1360 400" role="img" aria-label="RAD architecture: SiT blocks 1 to l produce the hidden state; a projector predicts the representation u_t (from DINOv2 during training, from the model's own policy during generation); u_t is normalized, scale-shifted with t, compressed to one token, and added back before SiT blocks l+1 to L, which predict the velocity.">
+            <defs>
+              <marker id="ar-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6B6A78"/></marker>
+              <marker id="ar-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4502F"/></marker>
+            </defs>
+            <!-- input -->
+            <text class="m lg" x="58" y="38" text-anchor="middle">x<tspan class="sb" dy="6">t</tspan></text>
+            <g class="tok"><rect x="18" y="64" width="16" height="16" rx="2"/><rect x="38" y="64" width="16" height="16" rx="2"/><rect x="58" y="64" width="16" height="16" rx="2"/><rect x="78" y="64" width="16" height="16" rx="2"/></g>
+            <text class="tiny" x="56" y="100" text-anchor="middle">noisy tokens</text>
+            <line class="ln g" x1="100" y1="72" x2="126" y2="72" marker-end="url(#ar-g)"/>
+            <!-- SiT blocks 1..l -->
+            <g class="blk"><rect x="140" y="34" width="150" height="56" rx="10"/><rect x="135" y="39" width="150" height="56" rx="10"/><rect x="130" y="44" width="150" height="56" rx="10"/></g>
+            <text class="blk-t" x="205" y="68" text-anchor="middle">SiT Blocks</text>
+            <text class="m" x="205" y="90" text-anchor="middle">1 … ℓ</text>
+            <!-- trunk -->
+            <line class="ln g" x1="290" y1="72" x2="1142" y2="72" marker-end="url(#ar-g)"/>
+            <circle cx="322" cy="72" r="5.5" class="dot"/>
+            <text class="m" x="314" y="52">x<tspan class="sb" dy="6">t</tspan><tspan class="sb" dx="-6" dy="-17">ℓ</tspan></text>
+            <!-- 1 · predict -->
+            <rect class="panel" x="200" y="124" width="540" height="244" rx="14"/>
+            <text class="plab" x="218" y="356">1 · PREDICT</text>
+            <line class="ln a" x1="322" y1="78" x2="322" y2="246" marker-end="url(#ar-a)"/>
+            <rect class="box a" x="252" y="250" width="140" height="72" rx="10"/>
+            <text class="box-t" x="322" y="280" text-anchor="middle">Projector</text>
+            <text class="m" x="322" y="304" text-anchor="middle">h<tspan class="sb" dy="5">ϕ</tspan><tspan dy="-5"> · MLP</tspan></text>
+            <!-- training branch: teacher policy -->
+            <g class="train">
+              <rect class="tpanel" x="410" y="140" width="316" height="88" rx="10"/>
+              <text class="hdr" x="714" y="160" text-anchor="end"><tspan font-weight="700">TRAINING</tspan>  teacher policy</text>
+              <text class="m" x="424" y="202">x<tspan class="sb" dy="5">0</tspan></text>
+              <line class="ln g" x1="442" y1="197" x2="462" y2="197" marker-end="url(#ar-g)"/>
+              <rect class="box w" x="464" y="177" width="92" height="40" rx="8"/>
+              <text class="box-s" x="510" y="195" text-anchor="middle">DINOv2</text>
+              <text class="tiny" x="510" y="209" text-anchor="middle">frozen encoder</text>
+              <line class="ln g" x1="556" y1="197" x2="574" y2="197" marker-end="url(#ar-g)"/>
+              <text class="m sm" x="578" y="202">u<tspan class="sb" dy="5">t</tspan><tspan dy="-5"> ∼ q(· | f</tspan><tspan class="sb" dy="5">pre</tspan><tspan dy="-5">(x</tspan><tspan class="sb" dy="5">0</tspan><tspan dy="-5">))</tspan></text>
+              <polyline class="ln g flow" points="716,197 748,197 748,250" fill="none"/>
+              <line class="ln g dash" x1="510" y1="217" x2="510" y2="296"/>
+              <text class="m sm" x="518" y="258">ℒ<tspan class="sb" dy="5">align</tspan></text>
+            </g>
+            <text class="or" x="640" y="246" text-anchor="middle">OR</text>
+            <!-- generation branch: own policy -->
+            <g class="gen">
+              <rect class="gpanel" x="410" y="262" width="316" height="88" rx="10"/>
+              <text class="hdr" x="714" y="282" text-anchor="end"><tspan font-weight="700">GENERATION</tspan>  own policy</text>
+              <polyline class="ln a flow" points="716,302 748,302 748,256" fill="none"/>
+            </g>
+            <line class="ln a" x1="392" y1="302" x2="574" y2="302" marker-end="url(#ar-a)"/>
+            <circle cx="510" cy="302" r="4" class="dot g"/>
+            <text class="m sm" x="414" y="294">h<tspan class="sb" dy="5">t</tspan><tspan class="sb" dx="-5" dy="-15">ℓ</tspan></text>
+            <text class="m sm gen-t" x="578" y="307">u<tspan class="sb" dy="5">t</tspan><tspan dy="-5"> ∼ p</tspan><tspan class="sb" dy="5">ϕ</tspan><tspan dy="-5">(· | h</tspan><tspan class="sb" dy="5">t</tspan><tspan dy="-5">)</tspan></text>
+            <!-- 2 · inject -->
+            <circle cx="748" cy="253" r="5" class="dot"/>
+            <text class="m sm" x="756" y="240">u<tspan class="sb" dy="5">t</tspan></text>
+            <line class="ln a" x1="753" y1="253" x2="790" y2="253" marker-end="url(#ar-a)"/>
+            <rect class="panel" x="776" y="198" width="470" height="122" rx="14"/>
+            <text class="plab" x="792" y="310">2 · INJECT</text>
+            <rect class="box a" x="792" y="220" width="124" height="66" rx="10"/>
+            <text class="box-t" x="854" y="244" text-anchor="middle">Normalize</text>
+            <text class="m xs" x="854" y="270" text-anchor="middle">(u − γū) / (σ̄ + ε)</text>
+            <line class="ln a" x1="916" y1="253" x2="940" y2="253" marker-end="url(#ar-a)"/>
+            <rect class="box a" x="944" y="220" width="120" height="66" rx="10"/>
+            <text class="box-t" x="1004" y="248" text-anchor="middle">Scale-Shift</text>
+            <text class="tiny" x="1004" y="268" text-anchor="middle">AdaLN-style</text>
+            <line class="ln a" x1="1004" y1="378" x2="1004" y2="290" marker-end="url(#ar-a)"/>
+            <text class="m" x="1004" y="396" text-anchor="middle">t</text>
+            <line class="ln a" x1="1064" y1="253" x2="1088" y2="253" marker-end="url(#ar-a)"/>
+            <rect class="box a" x="1092" y="220" width="136" height="66" rx="10"/>
+            <text class="box-t" x="1160" y="248" text-anchor="middle">Compress</text>
+            <text class="tiny" x="1160" y="268" text-anchor="middle">MLP → 1 token</text>
+            <line class="ln a" x1="1160" y1="220" x2="1160" y2="90" marker-end="url(#ar-a)"/>
+            <text class="m sm" x="1170" y="160">u<tspan class="sb" dy="5">t</tspan><tspan class="sb" dx="-5" dy="-15">c</tspan></text>
+            <!-- add + SiT blocks l+1..L -->
+            <circle cx="1160" cy="72" r="15" class="plus"/>
+            <path d="M1152 72 h16 M1160 64 v16" class="plus-x"/>
+            <line class="ln g" x1="1175" y1="72" x2="1192" y2="72" marker-end="url(#ar-g)"/>
+            <g class="blk"><rect x="1204" y="34" width="120" height="56" rx="10"/><rect x="1199" y="39" width="120" height="56" rx="10"/><rect x="1194" y="44" width="120" height="56" rx="10"/></g>
+            <text class="blk-t" x="1254" y="68" text-anchor="middle">SiT Blocks</text>
+            <text class="m" x="1254" y="90" text-anchor="middle">ℓ+1 … L</text>
+            <line class="ln g" x1="1314" y1="72" x2="1330" y2="72" marker-end="url(#ar-g)"/>
+            <text class="m lg" x="1334" y="80">v<tspan class="sb" dy="6">θ</tspan></text>
+          </svg>
+        </div>
+        <p class="say arch-say" id="arch-say"></p>
+      </div>
+
+      <!-- detailed: training in practice -->
+      <div class="dense dblock" data-ref="App. A.4 · A.8 · Sec. 3.5">
+        <h3 class="sub-h">Training in practice</h3>
+        <div class="tips">
+          <div class="tip-card"><h4>Inject early</h4><p>Block ℓ = 2 for B/2 and ℓ = 8 for L/2, XL/2, inside the first third of the network. The most influential architectural choice.</p><span class="val">B/2: block 2 → FID 8.2 · block 8 → 15.1</span></div>
+          <div class="tip-card"><h4>Use a flow policy</h4><p>Replace the policy's Gaussian noise with a conditional normalizing flow (4 affine couplings, zero-initialised, so training starts Gaussian).</p><span class="val">FID 10.3 → 8.7</span></div>
+          <div class="tip-card"><h4>Normalize · compress · modulate</h4><p>Remove 60% of the token mean (γ = 0.6) and rescale to unit size; an MLP over tokens compresses N tokens to one; adaLN-style modulation, zero-initialised.</p><span class="val">FID 8.7 → 8.2</span></div>
+          <div class="tip-card"><h4>Bounded alignment weight</h4><p>Use the saturated weight λ<sub>t</sub> × 0.5 instead of SNR(t)/2β², plus adaptive per-sample weighting with p = 1.</p><span class="val">FID 8.2 → 7.7 (with early injection)</span></div>
+          <div class="tip-card"><h4>Tune β only at sampling</h4><p>Train with β = 1; sample with β<sub>inf</sub> ∈ [0.5, 0.9] to concentrate the policy, trading diversity for fidelity without retraining.</p><span class="val">best β<sub>inf</sub>: 0.7 (B/2), 0.8 (L/2, XL/2)</span></div>
+          <div class="tip-card"><h4>Small overhead</h4><p>The control pathway is the same size at every scale; most of its cost is the projector, which REPA also trains but throws away.</p><span class="val">+12% FLOPs at B/2 · +3.5% L/2 · +2.5% XL/2</span></div>
+        </div>
+        <dl class="spec">
+          <div><dt>Data</dt><dd>ImageNet, 1.28M images · SD-VAE latents 32×32×4</dd></div>
+          <div><dt>Teacher</dt><dd>DINOv2-B/14 · 256 patch tokens × 768</dd></div>
+          <div><dt>Backbone</dt><dd>SiT-B/2, L/2, XL/2 · 256 tokens</dd></div>
+          <div><dt>Optimizer</dt><dd>AdamW · lr 1e-4 · batch 256 · fp16 · EMA 0.9999</dd></div>
+          <div><dt>Schedule</dt><dd>400K iterations · α<sub>t</sub> = 1−t, σ<sub>t</sub> = t · label dropout 0.1</dd></div>
+          <div><dt>Compute</dt><dd>8 × RTX PRO 6000 · 11 / 16 / 22 h for B / L / XL</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ================= 02 efficiency ================= -->
+    <section id="efficiency">
+      <div class="sec-head">
+        <span class="pill rv"><span class="n">02</span>Efficiency</span>
+        <h2 class="sec-title rv">
+          <svg viewBox="0 0 60 50" aria-hidden="true"><path d="M4 8 C 14 34, 26 40, 56 42" fill="none" stroke="#C4502F" stroke-width="1.8"/><path d="M4 4 C 18 18, 30 26, 56 30" fill="none" stroke="#4B44B0" stroke-width="1.3" stroke-dasharray="4 3"/></svg>
+          <span class="t"><span class="a">Faster, smaller,</span><span class="b">fewer steps</span></span>
+        </h2>
+      </div>
+
+      <div class="chart-big">
+        <div class="card rv">
+          <h3>Training convergence, XL/2</h3>
+          <div class="legend">
+            <span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#C4502F" stroke-width="2"/><circle cx="13" cy="5" r="3.5" fill="#C4502F"/></svg>RAD (ours)</span>
+            <span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#4B44B0" stroke-width="1.5" stroke-dasharray="5 4"/><rect x="10" y="2" width="6" height="6" fill="#fff" stroke="#4B44B0" stroke-width="1.5"/></svg>REPA</span>
+            <span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#8C8C8C" stroke-width="1.5" stroke-dasharray="1.5 3.5" stroke-linecap="round"/><circle cx="13" cy="5" r="3" fill="#fff" stroke="#8C8C8C" stroke-width="1.5"/></svg>SiT</span>
+          </div>
+          <div class="chart" id="c-conv" data-ratio="0.5"></div>
+          <div class="cap">FID-50k vs. training iterations (log–log), no CFG.</div>
+        </div>
+        <div class="chart-side rv">
+          <div class="bignum">70×</div>
+          <p>fewer iterations than <b>SiT-XL/2</b>: RAD-XL/2 at 100K matches SiT-XL/2 at 7M.</p>
+          <div class="bignum">27×</div>
+          <p>fewer iterations than <b>REPA-XL/2</b>: RAD-XL/2 at 150K matches REPA-XL/2 at 4M.</p>
+          <p class="fine">Same backbone, encoder, data and schedule as REPA. The only difference is feeding the representation back.</p>
+        </div>
+      </div>
+
+      <div class="chart-grid two">
+        <div class="card rv">
+          <h3>Fewer sampling steps</h3>
+          <div class="legend"><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#C4502F" stroke-width="2"/></svg>RAD-XL/2 @400K</span><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#4B44B0" stroke-width="1.5" stroke-dasharray="5 4"/></svg>REPA-XL/2 @4M</span></div>
+          <div class="chart" id="c-steps" data-ratio="0.6"></div>
+          <div class="cap">FID-50k vs. Euler ODE steps. With UniPC, RAD-XL/2 reaches <b>6.5</b> at 5 steps and <b>4.5</b> at 10.</div>
+        </div>
+        <div class="card rv">
+          <h3>Smaller models, same quality</h3>
+          <div class="legend"><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#C4502F" stroke-width="2"/></svg>RAD</span><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#4B44B0" stroke-width="1.5" stroke-dasharray="5 4"/></svg>REPA</span><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#8C8C8C" stroke-width="1.5" stroke-dasharray="1.5 3.5" stroke-linecap="round"/></svg>SiT</span></div>
+          <div class="chart" id="c-size" data-ratio="0.6"></div>
+          <div class="cap">FID-50k at 400K iterations, without CFG, across SiT backbones.</div>
+        </div>
+      </div>
+
+      <div class="dense dblock" data-ref="Fig. 3–6 · Tables 8–11">
+        <div class="chart-grid two">
+          <div class="card">
+            <h3>More linearly separable features</h3>
+            <div class="legend"><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#C4502F" stroke-width="2"/></svg>RAD-B/2</span><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#4B44B0" stroke-width="1.5" stroke-dasharray="5 4"/></svg>REPA-B/2</span></div>
+            <div class="chart" id="c-probe" data-ratio="0.78"></div>
+            <div class="cap">ImageNet top-1 linear probe per block, t = 0.1. Accuracy decays more slowly once u<sub>t</sub> is fed back.</div>
+          </div>
+          <div class="card">
+            <h3>B/2 trains 4× faster</h3>
+            <div class="legend"><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#C4502F" stroke-width="2"/></svg>RAD-B/2</span><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#4B44B0" stroke-width="1.5" stroke-dasharray="5 4"/></svg>REPA-B/2</span><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#9C98D8" stroke-width="1.5" stroke-dasharray="2 3"/></svg>REPA-XL/2</span></div>
+            <div class="chart" id="c-b2" data-ratio="0.78"></div>
+            <div class="cap">RAD-B/2 tracks the 4.8× larger REPA-XL/2 throughout training.</div>
+          </div>
+          <div class="card">
+            <h3>10× less data</h3>
+            <div class="legend"><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#C4502F" stroke-width="2"/></svg>RAD-B/2</span><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#4B44B0" stroke-width="1.5" stroke-dasharray="5 4"/></svg>REPA-B/2</span></div>
+            <div class="chart" id="c-data" data-ratio="0.78"></div>
+            <div class="cap">400K iterations on a fraction of ImageNet, best checkpoint, 50-step ODE. REPA stops improving after 10%.</div>
+          </div>
+          <div class="card">
+            <h3>Works with fast samplers</h3>
+            <div class="legend"><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#C4502F" stroke-width="2"/></svg>Euler</span><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#E89A80" stroke-width="2"/></svg>UniPC-2</span><span><svg viewBox="0 0 26 10"><line x1="0" y1="5" x2="26" y2="5" stroke="#7A2A14" stroke-width="2"/></svg>UniPC-3</span></div>
+            <div class="chart" id="c-unipc" data-ratio="0.78"></div>
+            <div class="cap">RAD-XL/2 at 400K, no guidance: FID 6.5 in 5 steps with UniPC.</div>
+          </div>
+        </div>
+        <p class="say">FID-50k with the ADM suite · Euler–Maruyama SDE, 250 steps, unless noted · no classifier-free guidance · best β<sub>inf</sub> per checkpoint.</p>
+      </div>
+    </section>
+
+    <!-- ================= 03 results ================= -->
+    <section id="results">
+      <div class="sec-head">
+        <span class="pill rv"><span class="n">03</span>Results</span>
+        <h2 class="sec-title rv">
+          <svg viewBox="0 0 60 50" aria-hidden="true"><g stroke="#1A1C1C" stroke-width="1.2"><line x1="4" y1="12" x2="56" y2="12"/><line x1="4" y1="25" x2="56" y2="25"/><line x1="4" y1="38" x2="56" y2="38"/></g><rect x="4" y="27" width="52" height="9" fill="rgba(196,80,47,.22)"/><circle cx="50" cy="31.5" r="3" fill="#C4502F"/></svg>
+          <span class="t"><span class="a">Measured</span><span class="b">gains</span></span>
+        </h2>
+      </div>
+
+      <div class="gains">
+        <div class="gain rv"><div class="num">70×</div><div class="what">fewer training iterations</div><div class="vs">RAD-XL/2 at <span class="m">100K</span> matches SiT-XL/2 at <span class="m">7M</span></div></div>
+        <div class="gain rv"><div class="num">27×</div><div class="what">fewer training iterations</div><div class="vs">RAD-XL/2 at <span class="m">150K</span> matches REPA-XL/2 at <span class="m">4M</span></div></div>
+        <div class="gain rv"><div class="num">10×</div><div class="what">fewer sampling steps</div><div class="vs">10 Euler steps <span class="m">FID 6.8</span> vs. REPA at 100 steps <span class="m">FID 7.4</span></div></div>
+        <div class="gain rv"><div class="num">4.8×</div><div class="what">fewer parameters</div><div class="vs">RAD-B/2 <span class="m">FID 7.7</span> vs. REPA-XL/2 <span class="m">FID 7.9</span></div></div>
+        <div class="gain rv"><div class="num">10×</div><div class="what">less training data</div><div class="vs">RAD-B/2 on 10% of ImageNet <span class="m">FID 14.9</span> vs. REPA-B/2 on all <span class="m">26.6</span></div></div>
+        <div class="gain rv"><div class="num">+4.4</div><div class="what">points linear probe</div><div class="vs">RAD-B/2 vs. REPA-B/2, ImageNet top-1, t = 0.1</div></div>
+        <div class="gain rv"><div class="num">2×</div><div class="what">faster REG convergence</div><div class="vs">REG + RAD on SiT-B/2 at 400K <span class="m">FID 15.2 → 8.9</span></div></div>
+        <div class="gain rv"><div class="num">3.94</div><div class="what">text-to-image FID, XL/2</div><div class="vs">vs. REPA <span class="m">4.31</span> · GenEval <span class="m">0.266</span> vs. <span class="m">0.258</span></div></div>
+      </div>
+
+      <div class="dense dblock" data-ref="Sec. 3.5 · Tables 4–5">
+        <h3 class="sub-h">What matters <span>ablations · SiT-B/2 · 400K iterations</span></h3>
+        <div class="abl-grid">
+          <div class="abl" aria-label="Ablation: adding RAD components one at a time">
+            <div class="abl-row"><span class="k">A</span><span class="l">REPA</span><span class="bar"><i style="--w:100%"></i></span><b>22.9</b><em></em></div>
+            <div class="abl-row hi"><span class="k">B</span><span class="l">+ feed <span data-texi="\mathbf{u}_t">u<sub>t</sub></span> to the denoiser</span><span class="bar"><i style="--w:45%"></i></span><b>10.3</b><em>−12.5</em></div>
+            <div class="abl-row"><span class="k">C</span><span class="l">+ flow policy</span><span class="bar"><i style="--w:38%"></i></span><b>8.7</b><em>−1.6</em></div>
+            <div class="abl-row"><span class="k">D</span><span class="l">+ control norm + modulation</span><span class="bar"><i style="--w:35.8%"></i></span><b>8.2</b><em>−0.6</em></div>
+            <div class="abl-row"><span class="k">E</span><span class="l">+ early injection, p = 1</span><span class="bar"><i style="--w:33.6%"></i></span><b>7.7</b><em>−0.5</em></div>
+            <p class="say">Feeding the representation back does most of the work: FID 22.9 → 10.3 on its own.</p>
+          </div>
+          <div class="abl-side">
+            <h4>Encoder <span>robust</span></h4>
+            <div class="mini"><span>DINOv2-B</span><b>8.2</b></div><div class="mini"><span>DINOv2-L</span><b>8.4</b></div><div class="mini"><span>SigLIP-L</span><b>8.9</b></div>
+            <h4>Injection depth <span>earlier is better</span></h4>
+            <div class="mini"><span>block 2</span><b>8.2</b></div><div class="mini"><span>block 4</span><b>8.5</b></div><div class="mini"><span>block 6</span><b>10.5</b></div><div class="mini"><span>block 8</span><b>15.1</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dense dblock" data-ref="Sec. 3.4 · Tables 2–3">
+        <h3 class="sub-h">Plugs into other methods and tasks</h3>
+        <div class="two-tbl">
+          <table class="cmp sm">
+            <caption>REG + RAD · FID-50k ↓</caption>
+            <thead><tr><th>Backbone</th><th>Iter.</th><th>REG</th><th>+ RAD</th></tr></thead>
+            <tbody>
+              <tr><td>SiT-B/2</td><td>100K</td><td>36.1</td><td class="win">22.4</td></tr>
+              <tr><td>SiT-B/2</td><td>400K</td><td>15.2</td><td class="win">8.9</td></tr>
+              <tr><td>SiT-L/2</td><td>100K</td><td>11.4</td><td class="win">7.8</td></tr>
+              <tr><td>SiT-L/2</td><td>400K</td><td>4.6</td><td class="win">3.9</td></tr>
+            </tbody>
+          </table>
+          <table class="cmp sm">
+            <caption>Text-to-image · no guidance</caption>
+            <thead><tr><th>Backbone</th><th>Method</th><th>FID ↓</th><th>GenEval ↑</th></tr></thead>
+            <tbody>
+              <tr><td>B/2</td><td>REPA</td><td>10.77</td><td>0.138</td></tr>
+              <tr><td>B/2</td><td>RAD</td><td class="win">8.42</td><td class="win">0.166</td></tr>
+              <tr><td>XL/2</td><td>REPA</td><td>4.31</td><td>0.258</td></tr>
+              <tr><td>XL/2</td><td>RAD</td><td class="win">3.94</td><td class="win">0.266</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="dense dblock" data-ref="Table 1">
+      <h3 class="sub-h">Against the field <span>ImageNet 256×256</span></h3>
+      <div class="tbl-wrap">
+        <table class="cmp">
+          <thead>
+            <tr><th></th><th></th><th class="grp" colspan="2">B/2</th><th class="grp" colspan="2">L/2</th><th class="grp" colspan="2">XL/2</th></tr>
+            <tr><th>Method</th><th>Epochs</th><th>#Params</th><th>FID↓</th><th>#Params</th><th>FID↓</th><th>#Params</th><th>FID↓</th></tr>
+          </thead>
+          <tbody>
+            <tr class="cat"><td colspan="8">Diffusion transformers</td></tr>
+            <tr><td>DiT</td><td>80</td><td>130M</td><td class="fid">43.5</td><td>458M</td><td class="fid">23.3</td><td>675M</td><td class="fid">19.5</td></tr>
+            <tr><td>DiT</td><td>1400</td><td>–</td><td>–</td><td>–</td><td>–</td><td>675M</td><td class="fid">9.6</td></tr>
+            <tr><td>SiT</td><td>80</td><td>130M</td><td class="fid">33.0</td><td>458M</td><td class="fid">18.8</td><td>675M</td><td class="fid">17.2</td></tr>
+            <tr><td>SiT</td><td>1400</td><td>–</td><td>–</td><td>–</td><td>–</td><td>675M</td><td class="fid">8.3</td></tr>
+            <tr class="cat"><td colspan="8">Representation alignment</td></tr>
+            <tr><td>DiT + REPA</td><td>80</td><td>–</td><td>–</td><td>458M</td><td class="fid">15.6</td><td>675M</td><td class="fid">12.3</td></tr>
+            <tr><td>REPA</td><td>80</td><td>130M</td><td class="fid">24.4</td><td>458M</td><td class="fid">10.0</td><td>675M</td><td class="fid">7.9</td></tr>
+            <tr><td>iREPA</td><td>80</td><td>130M</td><td class="fid">21.4</td><td>458M</td><td class="fid">9.4</td><td>675M</td><td class="fid">7.5</td></tr>
+            <tr><td>sREPA</td><td>80</td><td>130M</td><td class="fid">20.5</td><td>458M</td><td class="fid">8.7</td><td>675M</td><td class="fid">7.2</td></tr>
+            <tr><td>HASTE</td><td>80</td><td>130M</td><td class="fid">19.6</td><td>458M</td><td class="fid">8.9</td><td>675M</td><td class="fid">7.3</td></tr>
+            <tr><td>REED</td><td>80</td><td>130M</td><td class="fid">19.5</td><td>458M</td><td class="fid">8.9</td><td>675M</td><td class="fid">7.3</td></tr>
+            <tr><td>TREAD</td><td>80</td><td>130M</td><td class="fid">16.0</td><td>458M</td><td class="fid">5.9</td><td>675M</td><td class="fid">4.9</td></tr>
+            <tr><td>REG</td><td>80</td><td>132M</td><td class="fid">15.2</td><td>460M</td><td class="fid">4.6</td><td>677M</td><td class="fid best">3.4</td></tr>
+            <tr><td>REPA-E<sup>†</sup></td><td>80</td><td>–</td><td>–</td><td>–</td><td>–</td><td>675M</td><td class="fid">4.1</td></tr>
+            <tr class="cat"><td colspan="8">Representation augmentation</td></tr>
+            <tr class="ours"><td>RAD (ours)</td><td>80</td><td>142M</td><td class="fid best">7.7</td><td>472M</td><td class="fid best">3.9</td><td>690M</td><td class="fid">3.7</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tbl-note">FID-50k without CFG · Euler SDE, 250 steps · 80 epochs (400K iterations) · † REPA-E also fine-tunes the VAE end-to-end.</div>
+      </div>
+    </section>
+
+    <!-- ================= 04 samples ================= -->
+    <section id="samples">
+      <div class="sec-head">
+        <span class="pill rv"><span class="n">04</span>Samples</span>
+        <h2 class="sec-title rv">
+          <svg viewBox="0 0 60 50" aria-hidden="true"><rect x="4" y="8" width="16" height="16" rx="2" fill="#1A1C1C" opacity=".25"/><rect x="22" y="8" width="16" height="16" rx="2" fill="#1A1C1C" opacity=".5"/><rect x="40" y="8" width="16" height="16" rx="2" fill="#C4502F"/><rect x="4" y="26" width="16" height="16" rx="2" fill="#1A1C1C" opacity=".5"/><rect x="22" y="26" width="16" height="16" rx="2" fill="#C4502F" opacity=".6"/><rect x="40" y="26" width="16" height="16" rx="2" fill="#1A1C1C" opacity=".25"/></svg>
+          <span class="t"><span class="a">What it</span><span class="b">generates</span></span>
+        </h2>
+      </div>
+
+      <div class="gal-head rv">
+        <h3>ImageNet <span>class-conditional · 256×256</span></h3>
+        <p>Curated RAD samples · 50-step ODE · CFG 3.0 · hover for the class</p>
+      </div>
+      <div class="gal-in rv" id="gal-in"></div>
+
+      <div class="gal-head rv" id="t2i">
+        <h3>Text-to-image · <em class="t2i-model" id="t2i-model">RAD-XL/2</em> <span id="t2i-blurb">256×256</span></h3>
+        <div class="seg" role="tablist" aria-label="Backbone" id="t2i-seg"></div>
+      </div>
+      <div class="t2i-stats rv" id="t2i-stats"></div>
+      <div class="gal-t2i rv" id="gal-t2i"></div>
+      <div class="tbl-note rv">BLIP3o captions · frozen Qwen3-0.6B text encoder · FID-50k and GenEval measured without guidance; samples shown with CFG 3–4.</div>
+    </section>
+
+    <!-- ================= 05 interpolation ================= -->
+    <section id="interpolation">
+      <div class="sec-head">
+        <span class="pill rv"><span class="n">05</span>Interpolation</span>
+        <h2 class="sec-title rv">
+          <svg viewBox="0 0 60 50" aria-hidden="true"><circle cx="8" cy="25" r="5" fill="#1A1C1C"/><circle cx="52" cy="25" r="5" fill="#C4502F"/><g fill="#1A1C1C"><circle cx="18" cy="25" r="1.6" opacity=".8"/><circle cx="26" cy="25" r="1.6" opacity=".6"/><circle cx="34" cy="25" r="1.6" opacity=".45"/><circle cx="42" cy="25" r="1.6" opacity=".3"/></g></svg>
+          <span class="t"><span class="a">A smooth</span><span class="b">latent space</span></span>
+        </h2>
+      </div>
+
+      <p class="intro rv">Take two real ImageNet images, read their representations with RAD's own policy head, and blend them with a weight
+        <span data-texi="m">m</span>. RAD morphs one subject into the other while pose, viewpoint and framing stay put.</p>
+
+      <div class="dense dblock ip-how" data-ref="Sec. 3.3 · App. A.7">
+        <div class="how"><span class="dnum">1</span><div><b>Encode</b><p>From each real image read <span data-texi="\bar{\mathbf{u}}=h_\phi(\mathbf{x}_{t_c},t_c)">ū = h<sub>ϕ</sub>(x<sub>t<sub>c</sub></sub>, t<sub>c</sub>)</span> at a small noise level, and invert it to noise <span data-texi="\mathbf{x}_1">x<sub>1</sub></span> with the ODE.</p></div></div>
+        <div class="how"><span class="dnum">2</span><div><b>Blend</b><p><span data-texi="\bar{\mathbf{u}}_m=m\,\bar{\mathbf{u}}^A+(1-m)\,\bar{\mathbf{u}}^B">ū<sub>m</sub> = m ū<sup>A</sup> + (1 − m) ū<sup>B</sup></span>; class embeddings blend the same way; the noises are slerped.</p></div></div>
+        <div class="how"><span class="dnum">3</span><div><b>Sample</b><p>Generate from the blended noise with the blended representation: 50 Euler ODE steps, no guidance, no external encoder.</p></div></div>
+      </div>
+
+      <div class="ip-pairs rv" id="ip-pairs" role="tablist" aria-label="Interpolation pair"></div>
+      <div class="ip rv">
+        <figure class="ip-end"><img id="ip-a" alt=""><figcaption><b>A</b> · <span id="ip-a-l"></span> <em>(real)</em></figcaption></figure>
+        <div class="ip-main">
+          <img id="ip-cur" alt="">
+          <div class="ip-m">m = <span id="ip-m">0.50</span></div>
+        </div>
+        <figure class="ip-end"><img id="ip-b" alt=""><figcaption><b>B</b> · <span id="ip-b-l"></span> <em>(real)</em></figcaption></figure>
+      </div>
+      <div class="ctrl rv">
+        <button class="play" id="ip-play" type="button">▶ play</button>
+        <input type="range" id="ip-slider" min="0" max="20" step="1" value="10" aria-label="Interpolation weight">
+      </div>
+      <div class="ip-film rv" id="ip-film"></div>
+      <p class="tbl-note rv">Representation, inverted noise and class embedding are interpolated at the same m · 50 Euler ODE steps.</p>
+
+      <div class="vs-repa rv">
+        <h3 class="sub-h">Compared with REPA <span>baboon → macaque</span></h3>
+        <div class="film" id="film"></div>
+        <p class="interp-note">REPA-XL/2, trained 10× longer (4M iterations), jumps between poses and scenes mid-way. RAD-XL/2 at 400K changes the subject gradually.</p>
+      </div>
+    </section>
+
+    <!-- ================= 06 cite ================= -->
+    <section id="cite">
+      <div class="sec-head">
+        <span class="pill rv"><span class="n">06</span>BibTeX</span>
+        <h2 class="sec-title rv">
+          <svg viewBox="0 0 60 50" aria-hidden="true"><path d="M10 34 c0-10 4-16 12-20 M32 34 c0-10 4-16 12-20" stroke="#1A1C1C" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="14" cy="34" r="5" fill="#1A1C1C"/><circle cx="36" cy="34" r="5" fill="#C4502F"/></svg>
+          <span class="t"><span class="a">Cite</span><span class="b">this work</span></span>
+        </h2>
+      </div>
+      <div class="cite rv">
+        <button class="play copy" id="copy" type="button">copy</button>
+<pre id="bib">@article{maroufsofian2026rad,
+  title   = {Representation-Augmented Diffusions},
+  author  = {Marouf Sofian, Farrin and Pandey, Kushagra and Mandt, Stephan},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</pre>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Farrin Marouf Sofian, Kushagra Pandey, Stephan Mandt · University of California, Irvine</span>
+    <span>Correspondence: <a href="mailto:fmaroufs@uci.edu">fmaroufs@uci.edu</a></span>
+  </footer>
+</div>
+
+<!-- floating controls: view mode + back to top -->
+<div class="fab">
+  <button class="fab-btn to-top" id="to-top" type="button" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    <span class="fab-tip">Back to top</span>
+  </button>
+  <button class="fab-btn mode" id="mode-btn" type="button" data-mode-toggle aria-pressed="false">
+    <svg class="ic ic-dense" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h16M4 18h10"/></svg>
+    <svg class="ic ic-brief" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14M5 14h8"/></svg>
+    <span class="lbl" id="mode-lbl">detail</span>
+    <span class="fab-tip" id="mode-tip">Detailed view: math, architecture, training <kbd>D</kbd></span>
+  </button>
+</div>
+
+<script src="/rad/assets/js/config.js"></script>
+<script src="/rad/assets/js/samples-data.js"></script>
+<script src="/rad/assets/js/main.js"></script>
+<script src="/rad/assets/js/mode.js"></script>
+<script src="/rad/assets/js/collage.js"></script>
+<script src="/rad/assets/js/graphical-model.js"></script>
+<script src="/rad/assets/js/charts.js"></script>
+<script src="/rad/assets/js/samples.js"></script>
+<script src="/rad/assets/js/interp.js"></script>
+</body>
+</html>

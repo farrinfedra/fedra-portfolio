@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
-import { FiChevronDown, FiGlobe, FiPenTool } from "react-icons/fi";
+import { FiChevronDown, FiFileText, FiGlobe, FiPenTool } from "react-icons/fi";
 import { FaGithub } from "react-icons/fa";
 import { SiArxiv } from "react-icons/si";
 import { publicationGroups, type Publication, type Tag } from "@/lib/data";
@@ -96,6 +96,7 @@ function PaperLinks({
   const { links } = paper;
   const items = [
     links.arxiv && { label: "arXiv", href: links.arxiv, icon: SiArxiv },
+    links.pdf && { label: "PDF", href: links.pdf, icon: FiFileText },
     links.github && { label: "Code", href: links.github, icon: FaGithub },
     links.project && { label: "Project", href: links.project, icon: FiGlobe },
     links.blog && { label: "Blog", href: links.blog, icon: FiPenTool },
@@ -170,6 +171,13 @@ function PaperCard({
       <div className="mt-1.5">
         <Authors authors={paper.authors} />
       </div>
+      {(paper.role || paper.note) && (
+        <p className="mt-2 text-sm text-ink/80">
+          {paper.role && <span className="font-semibold text-accent">{paper.role}</span>}
+          {paper.role && paper.note && <span className="mx-1.5 text-faint">·</span>}
+          {paper.note}
+        </p>
+      )}
 
       <div className="mt-4 flex gap-3 rounded-xl border border-line bg-bg px-4 py-3">
         <span className="mt-[0.2rem] shrink-0 font-mono text-[0.62rem] font-medium uppercase tracking-[0.14em] text-accent">
