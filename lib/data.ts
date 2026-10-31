@@ -6,7 +6,7 @@ export const profile = {
   role: "Ph.D. Student in Computer Science",
   affiliation: "UC Irvine",
   email: "farrinsofian@gmail.com",
-  cv: "/Farrin_CV.pdf",
+  cv: "/Farrin-CV.pdf",
   avatar: "/avatar.jpg",
   advisor: { name: "Stephan Mandt", url: "https://sites.uci.edu/mandt/" },
 };
