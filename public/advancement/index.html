@@ -199,12 +199,17 @@
   .slot {
     font-family: "JetBrains Mono", monospace; letter-spacing: 0; font-size: .74rem;
     border-radius: 999px; padding: 5px 10px; cursor: pointer; background: transparent;
-    border: 1px dashed rgb(var(--faint) / .7); color: rgb(var(--faint)); text-decoration: line-through;
+    border: 1px solid rgb(var(--line)); color: rgb(var(--muted)); background: rgb(var(--bg));
     transition: background .1s, color .1s, border-color .1s;
   }
-  .slot.on { text-decoration: none; border-style: solid; font-weight: 500; }
+  .slot:hover { border-color: rgb(var(--ink) / .35); color: rgb(var(--ink)); }
+  .slot.on { font-weight: 500; }
   .kind-yes .slot.on { background: rgb(var(--sage) / .16); border-color: rgb(var(--sage)); color: rgb(var(--sage)); }
   .kind-no  .slot.on { background: rgb(var(--accent) / .14); border-color: rgb(var(--accent)); color: rgb(var(--accent)); }
+  .trow .need {
+    display: block; font-family: "JetBrains Mono", monospace; letter-spacing: 0; font-weight: 500;
+    font-size: .66rem; color: rgb(var(--accent)); margin-top: 2px;
+  }
   .empty-times { color: rgb(var(--faint)); font-size: .88rem; font-style: italic; }
   @media (max-width: 520px) {
     .trow { grid-template-columns: 1fr; gap: 6px; }
@@ -392,6 +397,7 @@ const daysInMonth = new Date(CONFIG.year, CONFIG.month, 0).getDate();
 const firstDow = new Date(CONFIG.year, CONFIG.month - 1, 1).getDay();
 const ALL = () => new Set(CONFIG.slots.map((_, i) => i));
 const PRESETS = {
+  none: () => new Set(),
   any: ALL,
   am:  () => new Set(CONFIG.slots.map((s, i) => s.part === "am" ? i : -1).filter(i => i >= 0)),
   pm:  () => new Set(CONFIG.slots.map((s, i) => s.part === "pm" ? i : -1).filter(i => i >= 0)),
@@ -401,7 +407,7 @@ const PRESETS = {
 const state = {
   mode: "yes",
   yes: new Map(), no: new Map(),
-  pattern: { yes: "any", no: "any" },
+  pattern: { yes: "none", no: "any" },
   attend: "",
 };
 
@@ -415,10 +421,12 @@ function label(d) {
 }
 const sortedDays = m => [...m.keys()].sort((a,b) => a-b);
 function slotText(set) {
+  if (!set.size) return "no time picked";
   if (set.size === CONFIG.slots.length) return "any time";
   return [...set].sort((a,b) => a-b).map(i => CONFIG.slots[i].label).join(", ");
 }
 function shortTag(set) {
+  if (!set.size) return "pick time";
   if (set.size === CONFIG.slots.length) return "";
   const parts = new Set([...set].map(i => CONFIG.slots[i].part));
   const fullPart = p => [...PRESETS[p]()].every(i => set.has(i));
@@ -459,7 +467,7 @@ function renderTimes(kind) {
   head.append(title, tz);
   const sub = document.createElement("p"); sub.className = "sub";
   sub.textContent = kind === "yes"
-    ? "Every date you tap starts as \"any time\". Only adjust if some times don't work — tap a slot to turn it off."
+    ? "For each date, tap the times that work for you. Shortcut: \"Any time\", \"Mornings\" or \"Afternoons\" fills in every date at once."
     : "Every date you tap starts as \"busy all day\". If you're free for part of it, tap the slots you could still make to turn them off.";
   box.append(head, sub);
 
@@ -467,7 +475,7 @@ function renderTimes(kind) {
   const lbl = document.createElement("span"); lbl.className = "lbl"; lbl.textContent = m.size ? "Set all dates to:" : "Default for dates you tap:";
   apply.appendChild(lbl);
   const names = kind === "yes"
-    ? { any: "Any time", am: "Mornings only", pm: "Afternoons only" }
+    ? { any: "Any time", am: "Mornings", pm: "Afternoons" }
     : { any: "Busy all day", am: "Busy mornings", pm: "Busy afternoons" };
   Object.entries(names).forEach(([key, text]) => {
     const c = document.createElement("button"); c.className = "chip"; c.textContent = text;
@@ -500,11 +508,15 @@ function renderTimes(kind) {
       b.addEventListener("click", () => {
         const set = m.get(d);
         set.has(i) ? set.delete(i) : set.add(i);
-        if (!set.size) m.delete(d);   // no times left = drop the date
+        if (kind === "no" && !set.size) m.delete(d);   // free all day after all = drop the date
         render();
       });
       slots.appendChild(b);
     });
+    if (kind === "yes" && !m.get(d).size) {
+      const need = document.createElement("span"); need.className = "need"; need.textContent = "Pick a time";
+      dl.appendChild(need);
+    }
     row.append(dl, slots);
     box.appendChild(row);
   });
@@ -556,6 +568,13 @@ async function submit() {
   const name = ($("name").value || invitedName || "").trim();
   const txt = $("freetext").value.trim();
   if (!name) { err.textContent = "Please add your name so I know who this is from."; $("name").focus(); return; }
+  const noTime = sortedDays(state.yes).filter(d => !state.yes.get(d).size);
+  if (noTime.length) {
+    setMode("yes");
+    err.textContent = `Please pick at least one time for ${noTime.map(label).join(", ")} — or tap "Any time".`;
+    $("times-yes").scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
   if (!state.yes.size && !state.no.size && !txt) {
     err.textContent = "Please mark at least one date, or write your availability in option 03.";
     return;
