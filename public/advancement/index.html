@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Advancement Exam · Scheduling — Farrin Sofian</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Palette taken from farrinsofian.com */
+  :root {
+    --bg: 255 255 255;
+    --surface: 250 246 241;
+    --ink: 40 36 32;
+    --muted: 102 94 84;
+    --faint: 148 139 127;
+    --line: 230 222 211;
+    --accent: 180 80 47;
+    --highlight: 236 146 112;
+    --sage: 64 132 84;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: 29 25 21;
+      --surface: 39 34 29;
+      --ink: 242 234 224;
+      --muted: 191 179 163;
+      --faint: 138 127 114;
+      --line: 58 51 44;
+      --accent: 238 140 108;
+      --highlight: 238 150 115;
+      --sage: 120 190 140;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  ::selection { background: rgb(var(--highlight) / .25); }
+  body {
+    margin: 0;
+    font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+    background: rgb(var(--bg));
+    color: rgb(var(--ink));
+    letter-spacing: -.02em;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .serif { font-family: "Crimson Pro", ui-serif, Georgia, serif; }
+  .mono  { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace; letter-spacing: 0; }
+  .eyebrow {
+    font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .68rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: .14em; color: rgb(var(--accent));
+  }
+
+  nav.top {
+    max-width: 760px; margin: 0 auto; padding: 22px 20px 0;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  nav.top a { color: rgb(var(--ink)); text-decoration: none; font-weight: 600; font-size: .95rem; }
+  nav.top a:hover { color: rgb(var(--accent)); }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 44px 20px 70px; }
+
+  header h1 {
+    font-family: "Crimson Pro", ui-serif, Georgia, serif; font-weight: 300;
+    letter-spacing: -.045em; line-height: 1.05;
+    font-size: clamp(2.6rem, 6vw, 3.6rem); margin: 14px 0 18px;
+  }
+  header h1 em { font-style: italic; color: rgb(var(--accent)); }
+  header p { margin: 0 0 10px; color: rgb(var(--ink) / .85); font-size: 1.02rem; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 34px; }
+  .pill {
+    border: 1px solid rgb(var(--line)); border-radius: 999px; padding: 4px 12px;
+    font-family: "JetBrains Mono", monospace; letter-spacing: 0; font-size: .74rem; color: rgb(var(--muted));
+  }
+
+  .card {
+    background: rgb(var(--surface)); border: 1px solid rgb(var(--line)); border-radius: 22px;
+    padding: 24px; margin-bottom: 18px;
+  }
+  label.field { display: block; font-weight: 600; margin-bottom: 8px; }
+  input[type=text], textarea {
+    width: 100%; font: inherit; padding: 11px 14px; border: 1px solid rgb(var(--line));
+    border-radius: 12px; background: rgb(var(--bg)); color: rgb(var(--ink));
+  }
+  input::placeholder, textarea::placeholder { color: rgb(var(--faint)); }
+  input[type=text]:focus, textarea:focus { outline: 2px solid rgb(var(--accent) / .6); border-color: transparent; }
+  textarea { min-height: 120px; resize: vertical; }
+  h2 {
+    font-family: "Crimson Pro", serif; font-weight: 400; letter-spacing: -.03em;
+    font-size: 1.7rem; line-height: 1.15; margin: 4px 0 4px;
+  }
+  .sub { color: rgb(var(--muted)); font-size: .92rem; margin: 0 0 18px; }
+  .hint { color: rgb(var(--faint)); font-size: .86rem; font-weight: 400; }
+
+  /* Three method boxes */
+  .methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .method {
+    text-align: left; font: inherit; color: inherit; cursor: pointer;
+    background: rgb(var(--bg)); border: 1px solid rgb(var(--line)); border-radius: 16px; padding: 16px;
+    transition: border-color .15s, box-shadow .15s, transform .15s;
+  }
+  .method:hover { border-color: rgb(var(--ink) / .25); }
+  .method[aria-pressed=true] {
+    border-color: rgb(var(--accent)); box-shadow: 0 0 0 3px rgb(var(--accent) / .12);
+  }
+  .method .num { display: block; margin-bottom: 8px; }
+  .method strong { display: block; font-size: 1rem; }
+  .method span.desc { display: block; color: rgb(var(--muted)); font-size: .85rem; margin-top: 3px; line-height: 1.45; }
+  .method .badge {
+    display: block; margin-top: 10px; font-family: "JetBrains Mono", monospace; letter-spacing: 0;
+    font-size: .7rem; color: rgb(var(--accent)); min-height: 1em;
+  }
+  @media (max-width: 580px) { .methods { grid-template-columns: 1fr; } }
+
+  .panel { display: none; margin-top: 22px; }
+  .panel.active { display: block; }
+
+  /* Calendar */
+  .cal-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .cal-head h3 { margin: 0; font-family: "Crimson Pro", serif; font-weight: 400; font-size: 1.35rem; letter-spacing: -.03em; }
+  .count { font-family: "JetBrains Mono", monospace; letter-spacing: 0; font-size: .72rem; color: rgb(var(--muted)); }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .dow {
+    text-align: center; font-family: "JetBrains Mono", monospace; font-size: .64rem; letter-spacing: .12em;
+    color: rgb(var(--faint)); text-transform: uppercase; padding-bottom: 4px;
+  }
+  .day {
+    aspect-ratio: 1 / 1; border: 1px solid rgb(var(--line)); border-radius: 12px; background: rgb(var(--bg));
+    font: inherit; font-size: 1rem; cursor: pointer; position: relative; color: rgb(var(--ink));
+    display: flex; align-items: center; justify-content: center; user-select: none;
+    transition: background .1s, border-color .1s;
+  }
+  .day:hover:not(:disabled) { border-color: rgb(var(--ink) / .3); }
+  .day:disabled { background: transparent; border-style: dashed; color: rgb(var(--faint) / .6); cursor: default; }
+  .day.empty { visibility: hidden; }
+  .day.yes { background: rgb(var(--sage) / .2); border-color: rgb(var(--sage)); color: rgb(var(--sage)); font-weight: 700; }
+  .day.no  { background: rgb(var(--accent) / .18); border-color: rgb(var(--accent)); color: rgb(var(--accent)); font-weight: 700; }
+  .day.yes::after, .day.no::after { position: absolute; top: 3px; right: 7px; font-size: .7rem; }
+  .day.yes::after { content: "✓"; }
+  .day.no::after  { content: "✕"; }
+  .day .tag {
+    position: absolute; bottom: 3px; left: 0; right: 0; font-size: .55rem; color: rgb(var(--faint));
+    font-weight: 500; text-align: center; letter-spacing: 0;
+  }
+  .quick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip {
+    font: inherit; font-size: .85rem; background: transparent; border: 1px solid rgb(var(--ink) / .25);
+    border-radius: 999px; padding: 5px 14px; cursor: pointer; color: rgb(var(--ink));
+    transition: background .15s, color .15s;
+  }
+  .chip:hover { background: rgb(var(--ink)); color: rgb(var(--bg)); }
+  .chip[aria-pressed=true] { background: rgb(var(--ink)); color: rgb(var(--bg)); border-color: rgb(var(--ink)); }
+
+  .row { margin-top: 18px; }
+
+  /* Time slots */
+  .times { margin-top: 24px; padding-top: 20px; border-top: 1px dashed rgb(var(--line)); }
+  .times-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+  .times-head strong { font-size: 1rem; }
+  .times .sub { margin: 4px 0 14px; }
+  .apply { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .apply .lbl { font-size: .85rem; color: rgb(var(--muted)); margin-right: 2px; }
+  .trow {
+    display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid rgb(var(--line) / .7);
+  }
+  .trow:last-child { border-bottom: none; }
+  .trow .dlabel { font-weight: 600; font-size: .9rem; }
+  .slots { display: flex; flex-wrap: wrap; gap: 6px; }
+  .slot {
+    font-family: "JetBrains Mono", monospace; letter-spacing: 0; font-size: .74rem;
+    border-radius: 999px; padding: 5px 10px; cursor: pointer; background: transparent;
+    border: 1px dashed rgb(var(--faint) / .7); color: rgb(var(--faint)); text-decoration: line-through;
+    transition: background .1s, color .1s, border-color .1s;
+  }
+  .slot.on { text-decoration: none; border-style: solid; font-weight: 500; }
+  .kind-yes .slot.on { background: rgb(var(--sage) / .16); border-color: rgb(var(--sage)); color: rgb(var(--sage)); }
+  .kind-no  .slot.on { background: rgb(var(--accent) / .14); border-color: rgb(var(--accent)); color: rgb(var(--accent)); }
+  .empty-times { color: rgb(var(--faint)); font-size: .88rem; font-style: italic; }
+  @media (max-width: 520px) {
+    .trow { grid-template-columns: 1fr; gap: 6px; }
+  }
+
+  /* Submit */
+  .submit-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+  .primary {
+    font: inherit; font-weight: 600; font-size: 1rem; background: rgb(var(--ink)); color: rgb(var(--bg));
+    border: none; border-radius: 999px; padding: 13px 26px; cursor: pointer; transition: background .15s;
+  }
+  .primary:hover { background: rgb(var(--accent)); }
+  .primary:disabled { opacity: .5; cursor: not-allowed; }
+  .error { color: rgb(var(--accent)); font-size: .9rem; }
+
+  /* Thank-you */
+  #done { display: none; text-align: center; padding: 40px 0; }
+  #done h1 {
+    font-family: "Crimson Pro", serif; font-weight: 300; letter-spacing: -.045em;
+    font-size: clamp(2.6rem, 6vw, 3.6rem); margin: 14px 0 10px;
+  }
+  #done h1 em { color: rgb(var(--accent)); }
+  #done pre {
+    text-align: left; white-space: pre-wrap; background: rgb(var(--surface)); border: 1px solid rgb(var(--line));
+    border-radius: 16px; padding: 16px; font-family: "JetBrains Mono", monospace; letter-spacing: 0;
+    font-size: .8rem; margin: 24px auto 0; max-width: 540px; color: rgb(var(--ink) / .85);
+  }
+  footer {
+    max-width: 760px; margin: 0 auto; padding: 22px 20px 40px; border-top: 1px solid rgb(var(--line));
+    color: rgb(var(--faint)); font-size: .82rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a href="/" id="home-link">Farrin Sofian</a>
+  <span class="eyebrow">Scheduling</span>
+</nav>
+
+<div class="wrap">
+
+  <div id="form-view">
+    <header>
+      <span class="eyebrow" id="eyebrow">Advancement Exam</span>
+      <h1 id="greeting"><em>Thank you</em> for joining my committee.</h1>
+      <p>Please select a date and time that works for you.</p>
+      <div class="meta">
+        <span class="pill" id="length-pill"></span>
+        <span class="pill" id="loc-pill"></span>
+      </div>
+    </header>
+
+    <div class="card" id="name-card">
+      <label class="field" for="name">Your name</label>
+      <input type="text" id="name" placeholder="e.g. Prof. Jane Smith" autocomplete="name">
+    </div>
+
+    <div class="card">
+      <span class="eyebrow">Your availability</span>
+      <h2>How would you like to tell me?</h2>
+      <p class="sub">Choose one — or use more than one if you like. I'll get everything you fill in.</p>
+
+      <div class="methods" role="group" aria-label="Ways to share availability">
+        <button class="method" data-mode="yes" aria-pressed="true">
+          <span class="eyebrow num">01</span>
+          <strong>Days that work</strong>
+          <span class="desc">Tap the dates you're free.</span>
+          <span class="badge" id="badge-yes"></span>
+        </button>
+        <button class="method" data-mode="no" aria-pressed="false">
+          <span class="eyebrow num">02</span>
+          <strong>Days that don't</strong>
+          <span class="desc">Mostly free? Just tap the dates you can't make.</span>
+          <span class="badge" id="badge-no"></span>
+        </button>
+        <button class="method" data-mode="text" aria-pressed="false">
+          <span class="eyebrow num">03</span>
+          <strong>Write it out</strong>
+          <span class="desc">e.g. "Tuesdays &amp; Thursdays after 1pm."</span>
+          <span class="badge" id="badge-text"></span>
+        </button>
+      </div>
+
+      <div class="panel active" id="panel-yes">
+        <div class="cal-head">
+          <h3 class="cal-title"></h3>
+          <span class="count" id="count-yes"></span>
+        </div>
+        <div class="cal" id="cal-yes"></div>
+        <div class="quick">
+          <button class="chip" data-quick="all-yes">Select all weekdays</button>
+          <button class="chip" data-quick="clear-yes">Clear</button>
+        </div>
+        <div class="times kind-yes" id="times-yes"></div>
+      </div>
+
+      <div class="panel" id="panel-no">
+        <div class="cal-head">
+          <h3 class="cal-title"></h3>
+          <span class="count" id="count-no"></span>
+        </div>
+        <div class="cal" id="cal-no"></div>
+        <div class="quick">
+          <button class="chip" data-quick="clear-no">Clear</button>
+        </div>
+        <div class="times kind-no" id="times-no"></div>
+      </div>
+
+      <div class="panel" id="panel-text">
+        <label class="field" for="freetext">In your own words</label>
+        <textarea id="freetext" placeholder="e.g. Any weekday the week of Feb 8. Mornings are best. I'm away Feb 22–26."></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <label class="field">I'd prefer to join…</label>
+      <div class="quick" style="margin-top:0" role="group" aria-label="Attendance preference">
+        <button class="chip" data-attend="In person" aria-pressed="false">In person</button>
+        <button class="chip" data-attend="On Zoom" aria-pressed="false">On Zoom</button>
+        <button class="chip" data-attend="Either works" aria-pressed="false">Either works</button>
+      </div>
+      <div class="row">
+        <label class="field" for="note">Anything else? <span class="hint">(optional)</span></label>
+        <input type="text" id="note" placeholder="Leave me a note, if you'd like">
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <button class="primary" id="submit">Send my availability →</button>
+    </div>
+    <p class="error" id="error"></p>
+  </div>
+
+  <div id="done">
+    <span class="eyebrow">Received</span>
+    <h1><em>Thank you!</em></h1>
+    <p>I've got your availability and will follow up with the final date soon.</p>
+    <pre id="summary"></pre>
+    <p class="hint" id="done-note"></p>
+  </div>
+
+</div>
+
+<footer>
+  <span id="footer-left"></span>
+  <span>Questions? Just reply to my email.</span>
+</footer>
+
+<script>
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+const CONFIG = {
+  studentName:   "Farrin Marouf Sofian",
+  year:          2027,
+  month:         2,                    // 1 = Jan, 2 = Feb, ...
+  examLength:    "1.5 hours",
+  location:      "In person or Zoom",
+  timezone:      "Pacific Time",
+  allowWeekends: false,                // weekends greyed out if false
+  holidays:      { 15: "Presidents' Day" },
+  formspreeId:   "xqpprqdl",           // responses are emailed via formspree.io/f/xqpprqdl
+  // 1.5-hour exam slots offered each day. "part" decides which quick button includes it.
+  slots: [
+    { label: "9:00–10:30",  part: "am" },
+    { label: "10:30–12:00", part: "am" },
+    { label: "1:00–2:30",   part: "pm" },
+    { label: "2:30–4:00",   part: "pm" },
+    { label: "4:00–5:30",   part: "pm" },
+  ],
+};
+/* ============================================================ */
+
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const monthName = MONTHS[CONFIG.month - 1];
+const daysInMonth = new Date(CONFIG.year, CONFIG.month, 0).getDate();
+const firstDow = new Date(CONFIG.year, CONFIG.month - 1, 1).getDay();
+const ALL = () => new Set(CONFIG.slots.map((_, i) => i));
+const PRESETS = {
+  any: ALL,
+  am:  () => new Set(CONFIG.slots.map((s, i) => s.part === "am" ? i : -1).filter(i => i >= 0)),
+  pm:  () => new Set(CONFIG.slots.map((s, i) => s.part === "pm" ? i : -1).filter(i => i >= 0)),
+};
+
+// yes/no: Map(day -> Set of slot indexes). pattern: what newly tapped days start with.
+const state = {
+  mode: "yes",
+  yes: new Map(), no: new Map(),
+  pattern: { yes: "any", no: "any" },
+  attend: "",
+};
+
+const invitedName = new URLSearchParams(location.search).get("name");
+const $ = id => document.getElementById(id);
+function isWeekend(d) { const w = new Date(CONFIG.year, CONFIG.month - 1, d).getDay(); return w === 0 || w === 6; }
+function selectable(d) { return CONFIG.allowWeekends || !isWeekend(d); }
+function label(d) {
+  const w = new Date(CONFIG.year, CONFIG.month - 1, d).getDay();
+  return `${DOW[w]} ${monthName.slice(0,3)} ${d}`;
+}
+const sortedDays = m => [...m.keys()].sort((a,b) => a-b);
+function slotText(set) {
+  if (set.size === CONFIG.slots.length) return "any time";
+  return [...set].sort((a,b) => a-b).map(i => CONFIG.slots[i].label).join(", ");
+}
+function shortTag(set) {
+  if (set.size === CONFIG.slots.length) return "";
+  const parts = new Set([...set].map(i => CONFIG.slots[i].part));
+  const fullPart = p => [...PRESETS[p]()].every(i => set.has(i));
+  if (parts.size === 1 && parts.has("am") && fullPart("am")) return "AM";
+  if (parts.size === 1 && parts.has("pm") && fullPart("pm")) return "PM";
+  return `${set.size} slot${set.size > 1 ? "s" : ""}`;
+}
+
+function buildCalendar(kind) {
+  const el = $("cal-" + kind);
+  el.innerHTML = "";
+  DOW.forEach(x => { const h = document.createElement("div"); h.className = "dow"; h.textContent = x; el.appendChild(h); });
+  for (let i = 0; i < firstDow; i++) { const e = document.createElement("div"); e.className = "day empty"; el.appendChild(e); }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const b = document.createElement("button");
+    b.className = "day"; b.dataset.day = d;
+    b.append(String(d));
+    const t = document.createElement("span"); t.className = "tag"; b.appendChild(t);
+    b.setAttribute("aria-label", label(d));
+    if (!selectable(d)) b.disabled = true;
+    b.addEventListener("click", () => {
+      const m = state[kind];
+      m.has(d) ? m.delete(d) : m.set(d, PRESETS[state.pattern[kind]]());
+      render();
+    });
+    el.appendChild(b);
+  }
+}
+
+function renderTimes(kind) {
+  const box = $("times-" + kind);
+  const m = state[kind];
+  box.innerHTML = "";
+  const head = document.createElement("div"); head.className = "times-head";
+  const title = document.createElement("strong");
+  title.textContent = kind === "yes" ? "What times work?" : "When are you busy?";
+  const tz = document.createElement("span"); tz.className = "count"; tz.textContent = `${CONFIG.examLength} slots · ${CONFIG.timezone}`;
+  head.append(title, tz);
+  const sub = document.createElement("p"); sub.className = "sub";
+  sub.textContent = kind === "yes"
+    ? "Every date you tap starts as \"any time\". Only adjust if some times don't work — tap a slot to turn it off."
+    : "Every date you tap starts as \"busy all day\". If you're free for part of it, tap the slots you could still make to turn them off.";
+  box.append(head, sub);
+
+  const apply = document.createElement("div"); apply.className = "apply";
+  const lbl = document.createElement("span"); lbl.className = "lbl"; lbl.textContent = m.size ? "Set all dates to:" : "Default for dates you tap:";
+  apply.appendChild(lbl);
+  const names = kind === "yes"
+    ? { any: "Any time", am: "Mornings only", pm: "Afternoons only" }
+    : { any: "Busy all day", am: "Busy mornings", pm: "Busy afternoons" };
+  Object.entries(names).forEach(([key, text]) => {
+    const c = document.createElement("button"); c.className = "chip"; c.textContent = text;
+    c.setAttribute("aria-pressed", state.pattern[kind] === key);
+    c.addEventListener("click", () => {
+      state.pattern[kind] = key;
+      for (const d of m.keys()) m.set(d, PRESETS[key]());
+      render();
+    });
+    apply.appendChild(c);
+  });
+  box.appendChild(apply);
+
+  if (!m.size) {
+    const e = document.createElement("p"); e.className = "empty-times";
+    e.textContent = "Tap dates on the calendar above — they'll show up here.";
+    box.appendChild(e);
+    return;
+  }
+  sortedDays(m).forEach(d => {
+    const row = document.createElement("div"); row.className = "trow";
+    const dl = document.createElement("span"); dl.className = "dlabel"; dl.textContent = label(d);
+    const slots = document.createElement("div"); slots.className = "slots";
+    CONFIG.slots.forEach((s, i) => {
+      const b = document.createElement("button");
+      const on = m.get(d).has(i);
+      b.className = "slot" + (on ? " on" : ""); b.textContent = s.label;
+      b.setAttribute("aria-pressed", on);
+      b.setAttribute("aria-label", `${label(d)} ${s.label}`);
+      b.addEventListener("click", () => {
+        const set = m.get(d);
+        set.has(i) ? set.delete(i) : set.add(i);
+        if (!set.size) m.delete(d);   // no times left = drop the date
+        render();
+      });
+      slots.appendChild(b);
+    });
+    row.append(dl, slots);
+    box.appendChild(row);
+  });
+}
+
+function render() {
+  ["yes","no"].forEach(kind => {
+    const m = state[kind];
+    document.querySelectorAll(`#cal-${kind} .day[data-day]`).forEach(b => {
+      const d = +b.dataset.day, on = m.has(d);
+      b.classList.toggle(kind, on);
+      b.setAttribute("aria-pressed", on);
+      b.querySelector(".tag").textContent = on ? shortTag(m.get(d)) : (CONFIG.holidays[d] || "");
+    });
+    const n = m.size;
+    $("count-" + kind).textContent = n ? `${n} day${n > 1 ? "s" : ""} selected` : (kind === "yes" ? "Tap a date to mark it ✓" : "Tap a date to mark it ✕");
+    $("badge-" + kind).textContent = n ? `${n} day${n > 1 ? "s" : ""} marked` : "";
+    renderTimes(kind);
+  });
+  $("badge-text").textContent = $("freetext").value.trim() ? "Written ✓" : "";
+  document.querySelectorAll("[data-attend]").forEach(c => c.setAttribute("aria-pressed", c.dataset.attend === state.attend));
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll(".method").forEach(m => m.setAttribute("aria-pressed", m.dataset.mode === mode));
+  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + mode));
+  if (mode === "text") $("freetext").focus();
+}
+
+const listFor = kind => sortedDays(state[kind]).map(d => `${label(d)} (${slotText(state[kind].get(d))})`);
+
+function buildSummary(name) {
+  const lines = [`Name: ${name}`];
+  if (state.yes.size) lines.push(`WORKS:\n  ` + listFor("yes").join("\n  "));
+  if (state.no.size)  lines.push(`BUSY:\n  `  + listFor("no").map(s => s.replace("(any time)", "(all day)")).join("\n  "));
+  const txt = $("freetext").value.trim();
+  if (txt) lines.push(`In their words: ${txt}`);
+  if (state.attend) lines.push(`Prefers: ${state.attend}`);
+  const note = $("note").value.trim();
+  if (note) lines.push(`Note: ${note}`);
+  lines.push(`(Times are ${CONFIG.timezone})`);
+  return lines.join("\n");
+}
+
+async function submit() {
+  const err = $("error");
+  err.textContent = "";
+  const name = ($("name").value || invitedName || "").trim();
+  const txt = $("freetext").value.trim();
+  if (!name) { err.textContent = "Please add your name so I know who this is from."; $("name").focus(); return; }
+  if (!state.yes.size && !state.no.size && !txt) {
+    err.textContent = "Please mark at least one date, or write your availability in option 03.";
+    return;
+  }
+  const summary = buildSummary(name);
+  const btn = $("submit");
+  btn.disabled = true; btn.textContent = "Sending…";
+  try {
+    const res = await fetch(`https://formspree.io/f/${CONFIG.formspreeId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        _subject: `Advancement availability — ${name}`,
+        name,
+        works: listFor("yes").join("; "),
+        busy: listFor("no").map(s => s.replace("(any time)", "(all day)")).join("; "),
+        in_their_words: txt,
+        prefers: state.attend,
+        note: $("note").value.trim(),
+        summary,
+      }),
+    });
+    if (!res.ok) throw new Error(res.status);
+    showDone(summary);
+  } catch (e) {
+    btn.disabled = false; btn.textContent = "Send my availability →";
+    err.textContent = "Something went wrong sending this. Please try again, or just reply to my email with your availability.";
+  }
+}
+
+function showDone(summary) {
+  $("form-view").style.display = "none";
+  $("done").style.display = "block";
+  $("summary").textContent = summary;
+  window.scrollTo(0, 0);
+}
+
+// ---- init ----
+$("eyebrow").textContent = `Advancement Exam · ${monthName} ${CONFIG.year}`;
+document.querySelectorAll(".cal-title").forEach(h => h.textContent = `${monthName} ${CONFIG.year}`);
+$("length-pill").textContent = `Exam length · ${CONFIG.examLength}`;
+$("loc-pill").textContent = CONFIG.location;
+$("footer-left").textContent = `— ${CONFIG.studentName}`;
+if (invitedName) {
+  $("greeting").innerHTML = "";
+  const em = document.createElement("em"); em.textContent = `Dear ${invitedName},`;
+  $("greeting").append(em, document.createElement("br"), "thank you for joining my committee.");
+  $("name").value = invitedName;
+  $("name-card").style.display = "none";
+}
+buildCalendar("yes");
+buildCalendar("no");
+document.querySelectorAll(".method").forEach(m => m.addEventListener("click", () => setMode(m.dataset.mode)));
+document.querySelector('[data-quick="all-yes"]').addEventListener("click", () => {
+  for (let d = 1; d <= daysInMonth; d++)
+    if (selectable(d) && !isWeekend(d) && !state.yes.has(d)) state.yes.set(d, PRESETS[state.pattern.yes]());
+  render();
+});
+document.querySelector('[data-quick="clear-yes"]').addEventListener("click", () => { state.yes.clear(); render(); });
+document.querySelector('[data-quick="clear-no"]').addEventListener("click", () => { state.no.clear(); render(); });
+document.querySelectorAll("[data-attend]").forEach(c => c.addEventListener("click", () => {
+  state.attend = state.attend === c.dataset.attend ? "" : c.dataset.attend; render();
+}));
+$("freetext").addEventListener("input", render);
+$("submit").addEventListener("click", submit);
+render();
+</script>
+</body>
+</html>
